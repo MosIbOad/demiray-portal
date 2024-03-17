@@ -223,6 +223,8 @@ router.post('/api/registeraction', async (req, res) => {
     registerData.userPassword, registerData.userTaxNumber, registerData.userPhone, new Date());
     
     res.json({successMessage: "Kayıt işlemi başarılı!", waitTime: 1500});
+    let mailText = mailAPI.userComingForAdminText();
+    await database.sendMailToAdmins('Yeni Üye Kayıt İşlemi', mailText);
 });
 
 // sepet

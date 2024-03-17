@@ -108,6 +108,24 @@ function orderComingForAdminText() {
     </html> `;
 }
 
+function userComingForAdminText() {
+    return `<!DOCTYPE html>
+    <html>
+    <head>
+        <title>Sipariş Geldi</title>
+    </head>
+    <body style="text-align: center; padding: 40px 0; background: #EBF0F5;">
+        <div class="card" style="background: white; padding: 60px; border-radius: 4px; box-shadow: 0 2px 3px #C8D0D8; display: inline-block; margin: 0 auto;">
+            <div style="border-radius: 200px; height: 200px; width: 200px; background: #f5f7fa; margin: 0 auto;">
+                <span class="checkmark" style="color: #6684bc; font-size: 100px; line-height: 200px;">⌛</span>
+            </div>
+            <h1 style="color: #4b83b0; font-family: 'Nunito Sans', 'Helvetica Neue', sans-serif; font-weight: 900; font-size: 40px; margin-bottom: 10px;">Yeni Üye</h1>
+            <p style="color: #404F5E; font-family: 'Nunito Sans', 'Helvetica Neue', sans-serif; font-size:20px; margin: 0;">Yeni üye kayıtı gerçekleşti onaylamak için paneli ziyaret ediniz.</p>
+        </div>
+    </body>
+    </html> `;
+}
+
 //console.log(orderConfirmHTML());
 
-module.exports = { sendEmail, orderConfirmHTML, orderCancelHTML, orderWaitingHTML, orderComingForAdminText };
+module.exports = { sendEmail, orderConfirmHTML, orderCancelHTML, orderWaitingHTML, orderComingForAdminText, userComingForAdminText };
