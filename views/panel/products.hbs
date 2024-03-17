@@ -1099,14 +1099,6 @@
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-12 form-group form-group--lg">
-                                        <label class="form-label">Toplam Ürün</label>
-                                        <div class="input-group input-group--prepend">
-                                            <div class="input-group__prepend"><span class="input-group__symbol"><i class="fa-light fa-boxes-stacked"></i></span>
-                                            </div>
-                                            <input class="input" type="number" min="1" max="999999999" placeholder="Toplam Ürün" value="" required v-model="productAmount">
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-12 form-group form-group--lg">
                                         <label class="form-label">Model</label>
                                         <div class="input-group input-group--prepend">
                                             <div class="input-group__prepend"><span class="input-group__symbol"><i class="fa-light fa-palette"></i></span>
@@ -1139,7 +1131,7 @@
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-12 form-group form-group--lg">
-                                        <label class="form-label">Maksimum Stok</label>
+                                        <label class="form-label">Kullanıcı Kaç Adet Alabilir?</label>
                                         <div class="input-group input-group--prepend">
                                             <div class="input-group__prepend"><span class="input-group__symbol"><i class="fa-light fa-layer-group"></i></span>
                                             </div>
@@ -1160,6 +1152,14 @@
                                             <div class="input-group__prepend"><span class="input-group__symbol"><i class="fa-light fa-percent"></i></span>
                                             </div>
                                             <input class="input" type="number" min="1" max="999999999" placeholder="İndirimli Fiyat" value="" required v-model="productDiscountedPrice">
+                                        </div>
+                                    </div>
+                                   <div class="col-12 col-md-12 form-group form-group--lg">
+                                        <label class="form-label">Bu Üründen Toplamda Kaç Adet Mevcut?</label>
+                                        <div class="input-group input-group--prepend">
+                                            <div class="input-group__prepend"><span class="input-group__symbol"><i class="fa-light fa-boxes-stacked"></i></span>
+                                            </div>
+                                            <input class="input" type="number" min="1" max="999999999" placeholder="Toplam Ürün" value="" required v-model="productAmount">
                                         </div>
                                     </div>
                                     <div class="col-12 col-sm-6 col-lg-6 d-flex flex-column">
