@@ -10,7 +10,7 @@
               
              <div class="buttons d-flex align-items-center gap-2 user-menu" >
               <button @click="userMenuActive" class="btn login-btn btn-user" @mouseover="userMenu = true"><i class="fa-solid fa-user"></i></button>
-              <button class="btn new-account-btn" onclick="window.location.href='/basket'"><i class="fa-solid fa-basket-shopping"></i></button>
+              <button class="btn new-account-btn btn-basket" onclick="window.location.href='/basket'"><i class="fa-solid fa-basket-shopping"></i> Sepet</button>
 
               <div class="card user-menu-content" style="width: 10rem;" v-show="userMenu" @mouseleave="userMenu = false"> 
               <ul class="list-group list-group-flush" @mouseleave="userMenu = false">

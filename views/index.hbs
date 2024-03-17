@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Demiray Giriş</title>
+    <title>Demiray Portal | Ana Sayfa</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v6.0.0-beta3/css/all.css">
     <link href="https://fonts.cdnfonts.com/css/inter" rel="stylesheet">
@@ -24,7 +24,7 @@
       <!-- Nav End -->
 
       <!-- Kategoriler -->
-      <div class="row g-0 mt-4 gap-3">
+      <div class="row g-0 mt-4 gap-3 index-product-header">
       <div class="category-header d-flex align-items-center justify-content-between">
         <h5>Kategoriler</h5>
         <div class="slider-buttons d-flex gap-1">
@@ -32,7 +32,7 @@
           <!-- <button class="slider-button active"></button> -->
         </div>
       </div>
-      <div class="col-6 col-lg-4" style="width: 245px;" v-for="category in paginatedCategories" :key="category" @click="redirectPage(category.redirectPage)">
+      <div class="col-6 col-lg-4 index-product" style="width: 245px;" v-for="category in paginatedCategories" :key="category" @click="redirectPage(category.redirectPage)">
         <div class="product-item p-3 category-index">
           <div class="product-image-base">
             <img :src="`${category.imgSource}`" class="product-img" alt="">
@@ -46,7 +46,7 @@
       <!-- Kategoriler End -->
 
       <!-- Yeni Eklenen Ürünler Start -->
-      <div class="row g-0 mt-4 mb-4 gap-3" style="margin-top: 150px !important;">
+      <div class="row g-0 mt-4 mb-4 gap-3 index-product-header" style="margin-top: 150px !important;">
         <div class="category-header d-flex align-items-center justify-content-between">
           <h5>Yeni Eklenenler Ürünler</h5>
           <div class="slider-buttons d-flex gap-1">
@@ -55,7 +55,7 @@
             <!-- <button class="slider-button active"></button>  -->
           </div>
         </div>
-        <div class="col-6 col-lg-4" style="width: 245px;" v-for="newProduct in paginatedNewProducts" :key="newProduct" @click="redirectPage(`/product-content?productId=${newProduct.productId}`)">
+        <div class="col-6 col-lg-4 index-product" style="width: 245px;" v-for="newProduct in paginatedNewProducts" :key="newProduct" @click="redirectPage(`/product-content?productId=${newProduct.productId}`)">
           <div class="product-item p-3">
             <div class="product-top-content d-flex justify-content-between">
               <div class="col-sm-3 product-price-discount badge bg-warning">Yeni</div>
@@ -75,6 +75,46 @@
         </div>
         </div>
         <!-- Yeni Eklenen Ürünler End -->
+    </div>
+    <div class="container" style="margin-top: 150px;">
+        <div class="partner-container">
+            <div class="partner-header mb-5">
+                <div class="partner-title">Demiray E-ticaret Portallarımız Hizmetinizde!</div>
+                <div class="partner-sub-title">Ürünlerimizi dilerseniz e-ticaret portallarındanda ulaşabilirsiniz</div>
+            </div>
+            <div class="partner-content">
+                <div class="row">
+                    <div class="col-6 col-lg-3">
+                        <div class="partner-item">
+                            <a href="https://www.gittigidiyor.com/magaza/demiraymarketim" target="_blank">
+                                <img src="/assets/images/partner-1.webp" alt="">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="partner-item">
+                            <a href="https://www.n11.com/magaza/demirayltdsti" target="_blank">
+                                <img src="/assets/images/partner-2.webp" alt="">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="partner-item partner-3">
+                            <a href="https://www.trendyol.com/magaza/demiraymarketim-m-189133?sst=0" target="_blank">
+                                <img src="/assets/images/partner-3.webp" alt="">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="partner-item partner-4">
+                            <a href="#" target="_blank">
+                                <img src="/assets/images/partner-4.webp" alt="">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
   </main>
   <!-- Footer -->
