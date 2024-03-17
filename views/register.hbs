@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Demiray Portal Kayıt</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://fonts.cdnfonts.com/css/inter" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.min.css">
+    <script src="/assets/vue.min.js"></script>
+    <script src="/assets/jquery.min.js"></script>
+  </head>
+  <body>
+    <main class="d-flex align-items-center min-vh-100 py-3 py-md-0" id="app">
+      <div class="container d-flex align-items-center justify-content-center">
+        <div class="card login-card" style="width: 100% !important;">
+          <div class="row g-0">
+            <div class="col-md-7"><img src="/assets/images/login-bg.png" class="login-card-img" alt=""></div>
+            <div class="col-md-5">
+              <div class="card-body d-flex align-items-center flex-column">
+                <form>
+                <p class="login-card-description">Kayıt Ol</p>
+                  <div class="mb-3">
+                      <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="E-Posta" v-model="userMail">
+                  </div>
+                  <div class="mb-3">
+                    <input type="text" class="form-control" placeholder="Adınız" id="firstName" v-model="userName">
+                  </div>
+                   <div class="mb-3">
+                    <input type="text" class="form-control" placeholder="Soyadınız" id="lastName" v-model="userSurName">
+                  </div>
+                  <div class="mb-3">
+                    <input type="text" class="form-control" placeholder="Ticari Ünvan" id="CommercialTitle" v-model="userCommercialTitle">
+                  </div>
+                  <div class="mb-3">
+                      <textarea class="form-control" rows="3" placeholder="Adres" id="floatingTextarea" style="resize: none;" v-model="userAdress"></textarea>
+                  </div>
+                  <div class="mb-3">
+                    <input type="number" class="form-control" placeholder="Vergi Numarası" id="CommercialTitle" v-model="userTaxNumber">
+                  </div>
+                  <div class="mb-3">
+                    <input type="number" class="form-control" placeholder="Telefon Numarası" id="CommercialTitle" v-model="userPhone">
+                  </div>
+                  <div class="mb-3">
+                    <input type="password" class="form-control" placeholder="Şifre" id="exampleInputPassword1" v-model="userPassword">
+                  </div>
+                  <div class="mb-3">
+                    <input type="password" class="form-control" placeholder="Şifre Tekrar" id="exampleInputPassword1" v-model="verifyPassword">
+                  </div>
+                  <button type="button" class="btn login-btn w-100" @click="registerUser">Kayıt Ol</button>
+                </form>
+                <span class="create-account mt-3" @click="redirectLoginPage">Zaten Hesabın Var mı?
+                </span>
+                <footer class="login-card-footer-nav">
+                  <div class="text-center pt-2 mt-3">
+                    <span class="copyright"> © Demiray Isı</span>
+                </div>
+                <div>
+                </div>
+                </footer>
+              </div> 
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+    const app = new Vue({
+        el: '#app',
+        data: {
+            userMail: '',
+            userName: '',
+            userSurName: '',
+            userCommercialTitle: '',
+            userAdress: '',
+            userTaxNumber: '',
+            userPhone: '',
+            userPassword: '',
+            verifyPassword: '',
+        },
+        created: function() {
+        },
+        delimiters: ['[', ']'],
+        computed: {
+
+        },
+        methods: {
+            registerUser() {
+                if(this.userMail.trim() === '' || this.userName.trim() === '' || this.userSurName.trim() === '' || this.userCommercialTitle.trim() === '' || this.userAdress.trim() === '' || 
+                this.userTaxNumber.trim() === '' || this.userPhone.trim() === '' || this.userPassword.trim() === '' || this.verifyPassword.trim() === '') return errorMessage("Kayıt işlemi başarısız! Lütfen boş alanları doldurun.");
+
+                if(this.userPassword !== this.verifyPassword) return errorMessage('Şifreler uyuşmuyor!');
+
+                let registerData = {
+                    userMail: this.userMail,
+                    userName: this.userName,
+                    userSurName: this.userSurName,
+                    userCommercialTitle: this.userCommercialTitle,
+                    userAdress: this.userAdress,
+                    userTaxNumber: this.userTaxNumber,
+                    userPhone: this.userPhone,
+                    userPassword: this.userPassword,
+                }
+
+                $.ajax({
+                  url: '/api/registeraction',
+                  type: 'POST',
+                  contentType: 'application/json',
+                  data: JSON.stringify({ registerData: registerData }),
+                  success: function(response) {
+                    if(response.successMessage) {
+                      successMessage(response.successMessage, response.waitTime);
+                    }
+                    if(response.errorMessage) {
+                      errorMessage(response.errorMessage, response.waitTime);
+                    }
+                  },
+                  error: function() {
+                      //alert('Sunucu ile iletişim kurulamadı.');
+                  }
+                });
+                this.resetAllInputs();
+            },
+            resetAllInputs() {
+                this.userMail = '';
+                this.userName = '';
+                this.userSurName = '';
+                this.userCommercialTitle = '';
+                this.userAdress = '';
+                this.userTaxNumber = '';
+                this.userPhone = '';
+                this.userPassword = '';
+                this.verifyPassword = '';
+            },
+            redirectLoginPage() {
+                window.location.href = '/login';
+            }
+        },
+        mounted () {
+        }
+    });
+
+
+    function successMessage(text, delay = 1500) {
+      Swal.fire({
+      position: "center",
+      icon: "success",
+      title: text,
+      showConfirmButton: false,
+      timer: delay
+      });
+    }
+
+    function errorMessage(text, delay = 1500) {
+      Swal.fire({
+      position: "center",
+      icon: "error",
+      title: text,
+      showConfirmButton: false,
+      timer: delay
+    });
+}
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+  </body>
+</html>

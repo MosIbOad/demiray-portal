@@ -1,0 +1,11 @@
+{
+    "COOKIE_SECRET_CODE": "EtFawQrGz1wcHkipC7KtsNnbGAwSXAydmdlDaVCWQiypPwb7Do?2asd23424sd2q3412312qwsazxcbnski?Sahfdhjgasaw245z",
+    "SESSION_SECRET_CODE": "KLJLKJHASDEJKoıuasdkhaoıUASDSZKLFJCFDZXOIUWSDjasfpadawqedasdfgvswagWS?EDFGsdgv*WSGFawsdfvS?wqerw234r5rtew4tg",
+    "PORT": 5000,
+    "DATABASE": "demiray_portal",
+    "DATABASE_HOST": "localhost",
+    "DATABASE_USER": "root",
+    "DATABASE_PASSWORD": "",
+    "EMAIL_USER": "bilgi@demirayportal.com",
+    "EMAIL_PASSWORD": "DemirayPortal123"
+}

@@ -1,0 +1,240 @@
+<!doctype html> 
+<html lang="en" >
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Demiray Giriş</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v6.0.0-beta3/css/all.css">
+    <link href="https://fonts.cdnfonts.com/css/inter" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.min.css">
+    <script src="/assets/vue.min.js"></script>
+    <script src="/assets/jquery.min.js"></script>
+  </head>
+  <body>
+    <script>
+      var _serverData = {{{json orders}}};
+    </script>
+    <main id="app">
+    {{> header}}
+    <div class="container mt-3">
+      {{> navbar}}
+      <div class="row g-0 my-3 mt-5">  
+        <basket class="basket-header p-3 d-flex justify-content-between align-items-center"> 
+          <div class="basket-title">Geçmiş Siparişlerim</div>
+        </basket>
+      </div>
+      <div class="row mb-3"> 
+        <section class="col-12">
+          <div class="basket-list" style="background-color: transparent; border: none;">
+            <div class="accordion d-flex gap-3 flex-column" id="accordionExample">
+                <div class="accordion-item" v-for="waitingOrder in waitingOrders" :key="waitingOrder">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target=`#collapse${waitingOrder.orderId}` aria-expanded="false" :aria-controls=`#collapse${waitingOrder.orderId}`>
+               <div class="col-sm-11 d-flex justify-content-between">
+          <div class="order-number">
+            <span><strong>Sipariş Numarası</strong></span>
+            <span>#[waitingOrder.orderId]</span>
+          </div>
+          <div class="order-status">
+            <span class="badge text-bg-warning">Bekliyor</span>
+          </div>
+        </div>
+      </button>
+    </h2>
+    <div :id=`collapse${waitingOrder.orderId}` class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+        <h6>Detay</h6>
+        <ul style="list-style: none; padding:0">
+          <li><strong>Tarih:</strong> [waitingOrder.orderCreatedDate]</li>
+          <li><strong>Adı:</strong> [waitingOrder.name]</li>
+          <li><strong>Soyadı:</strong> [waitingOrder.surName]</li>
+          <li><strong>Ticari Unvan:</strong> [waitingOrder.commTitle]</li>
+          <li><strong>Vergi Numarası:</strong> [waitingOrder.taxNumber]</li>
+          <li><strong>Adres:</strong> [waitingOrder.adress]</li>
+          <li><strong>Telefon Numarası:</strong> [waitingOrder.phone]</li>
+          </ul>
+          <hr>
+          <table class="table w-100">
+  <thead>
+    <tr>
+      <th scope="col">Ürün</th>
+      <th scope="col">Miktar</th>
+      <th scope="col">Fiyat</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr v-for="product in waitingOrder.orderData" :key="product">
+      <th>[product.productName]</th>
+      <td>[product.productAmount]</td>
+      <td>[product.productPrice]</td>
+    </tr>
+    {{!-- <tr>
+      <th>1</th>
+      <td>Mark</td>
+      <td>Otto</td>
+    </tr>
+        <tr>
+      <th>1</th>
+      <td>Mark</td>
+      <td>Otto</td>
+    </tr>
+        <tr>
+      <th>1</th>
+      <td>Mark</td>
+      <td>Otto</td>
+    </tr> --}}
+  </tbody>
+</table>
+<h6 class="d-flex justify-content-end gap-4">
+  <span>Toplam</span>
+  <span>[calcWaitingOrderTotalPrice(waitingOrder.orderId)]₺</span>
+</h6>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion-item" v-for="compOrder in completedOrders" :key="compOrder">
+    <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target=`#collapse${compOrder.orderId}` aria-expanded="false" :aria-controls=`#collapse${compOrder.orderId}`>
+        <div class="col-sm-11 d-flex justify-content-between">
+          <div class="order-number">
+            <span><strong>Sipariş Numarası</strong></span>
+            <span>#[compOrder.orderId]</span>
+          </div>
+          <div class="order-status">
+            <span class="badge text-bg-success">Tamamlandı</span>
+          </div>
+        </div>
+      </button>
+    </h2>
+    <div :id=`collapse${compOrder.orderId}` class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+        <h6>Detay</h6>
+        <ul style="list-style: none; padding:0">
+          <li><strong>Tarih:</strong> [compOrder.orderCreatedDate]</li>
+          <li><strong>Adı:</strong> [compOrder.name]</li>
+          <li><strong>Soyadı:</strong> [compOrder.surName]</li>
+          <li><strong>Ticari Unvan:</strong> [compOrder.commTitle]</li>
+          <li><strong>Vergi Numarası:</strong> [compOrder.taxNumber]</li>
+          <li><strong>Adres:</strong> [compOrder.adress]</li>
+          <li><strong>Telefon Numarası:</strong> [compOrder.phone]</li>
+          </ul>
+          <hr>
+          <table class="table w-100">
+  <thead>
+    <tr>
+      <th scope="col">Ürün</th>
+      <th scope="col">Miktar</th>
+      <th scope="col">Fiyat</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr v-for="product in compOrder.orderData" :key="product">
+      <th>[product.productName]</th>
+      <td>[product.productAmount]</td>
+      <td>[product.productPrice]</td>
+    </tr>
+  </tbody>
+</table>
+<h6 class="d-flex justify-content-end gap-4">
+  <span>Toplam</span>
+  <span>[calcCompletedOrderTotalPrice(compOrder.orderId)]₺</span>
+</h6>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion-item" v-for="cancelOrder in canceledOrders" :key="cancelOrder">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target=`#collapse${cancelOrder.orderId}` aria-expanded="false" aria-controls=`collapse${cancelOrder.orderId}`>
+                <div class="col-sm-11 d-flex justify-content-between">
+          <div class="order-number">
+            <span><strong>Sipariş Numarası</strong></span>
+            <span>#[cancelOrder.orderId]</span>
+          </div>
+          <div class="order-status">
+            <span class="badge text-bg-danger">İptal</span>
+          </div>
+        </div>
+      </button>
+    </h2>
+    <div :id=`collapse${cancelOrder.orderId}` class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+        <h6>Detay</h6>
+        <ul style="list-style: none; padding:0">
+          <li><strong>Tarih:</strong> [cancelOrder.orderCreatedDate]</li>
+          <li><strong>Adı:</strong> [cancelOrder.name]</li>
+          <li><strong>Soyadı:</strong> [cancelOrder.surName]</li>
+          <li><strong>Ticari Unvan:</strong> [cancelOrder.commTitle]</li>
+          <li><strong>Vergi Numarası:</strong> [cancelOrder.taxNumber]</li>
+          <li><strong>Adres:</strong> [cancelOrder.adress]</li>
+          <li><strong>Telefon Numarası:</strong> [cancelOrder.phone]</li>
+          </ul>
+          <hr>
+          <table class="table w-100">
+  <thead>
+    <tr>
+      <th scope="col">Ürün</th>
+      <th scope="col">Miktar</th>
+      <th scope="col">Fiyat</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr v-for="product in cancelOrder.orderData" :key="product">
+      <th>[product.productName]</th>
+      <td>[product.productAmount]</td>
+      <td>[product.productPrice]</td>
+    </tr>
+  </tbody>
+</table>
+<h6 class="d-flex justify-content-end gap-4">
+  <span>Toplam</span>
+  <span>[calcCanceledOrderTotalPrice(cancelOrder.orderId)]₺</span>
+</h6>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <!-- Modal -->
+  <div class="modal fade" id="basketModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Ödeme Seçenekleri</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+<div class="form-check">
+  <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+  <label class="form-check-label" for="flexRadioDefault1">
+    Havale EFT
+  </label>
+</div>
+<div class="form-check mt-3">
+  <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+  <label class="form-check-label" for="flexRadioDefault2">
+   Muhasebe
+  </label>
+</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-modal-close" data-bs-dismiss="modal">Vazgeç</button>
+        <button type="button" class="btn btn-modal-confirm">Onayla</button> 
+      </div>
+    </div>
+  </div>
+ </div>
+  </main>
+        {{> footer }}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/assets/partialActions.js"></script>
+  </body>
+</html>

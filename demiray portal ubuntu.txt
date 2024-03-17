@@ -1,0 +1,41 @@
+ssh root@50.114.185.14
+!FJAzTyAvNEIV
+
+FTP:
+demiray
+QPhGfJX49]q7
+22
+
+-- MYSQL --
+demiray
+fW£6j/3j!<R7
+
+-- PHPMYADMIN --
+1c[Dv4]4%n#Kr}3o0P
+
+--DEMİRAY PORTAL 4WAY HESABI
+
+info@4way.dev
+pQa9{415K(uO
+
+
+
+-- SCREEN TEMİZLEME --
+screen -S screenname | ekran oluşturur
+screen -ls | ekranları listele
+screen -X -S 12345.6789 quit
+screen -r id | ekrana bağlan
+
+--
+sudo nano /etc/vsftpd.conf
+
+cd /home/demiray/demiray-portal/node_modules
+
+
+sudo systemctl restart vsftpd
+sudo systemctl stop vsftpd
+sudo systemctl start vsftpd
+
+sudo systemctl restart apache2
+sudo systemctl stop apache2
+sudo systemctl start apache2
