@@ -51,7 +51,7 @@ async function confirmUnverifiedUserById(unverifiedUserId) {
     }
 }
 
-async function createUser(name, surName, commTitle, adress, mail, password, taxNumber, phoneNumber, _registeredDate, adminLevel = 0, banned = false, basket = []) {
+async function createUser(name, surName, commTitle, adress, mail, password, taxNumber, phoneNumber, _registeredDate, adminLevel = 0, banned = false, basket = '[]') {
     try {
         // Şifreyi hash'leme. Güvenlik için bcrypt kullanıyoruz.
         const saltRounds = 10;
@@ -59,7 +59,7 @@ async function createUser(name, surName, commTitle, adress, mail, password, taxN
         const registeredDate = formatDate(_registeredDate);
 
         const query = 'INSERT INTO users (userName, userSurName, userCommercialTitle, userAdress, userMail, userPassword, userTaxNumber, userPhone, userRegisteredDate, userAdminLevel, isBanned, basket) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-        const values = [name, surName, commTitle, adress, mail, hashedPassword, taxNumber, phoneNumber, registeredDate, adminLevel, banned, JSON.stringify(basket)];
+        const values = [name, surName, commTitle, adress, mail, hashedPassword, taxNumber, phoneNumber, registeredDate, adminLevel, banned, basket];
 
         // Veritabanına bağlan ve sorguyu çalıştır
         const connection = await pool.getConnection();
