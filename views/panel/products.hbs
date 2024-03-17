@@ -1078,9 +1078,10 @@
                                     </div>
                                     <div class="col-12 form-group form-group--lg">
                                         <label class="form-label">Açıklama</label>
-                                        <div class="input-editor">
+                                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" v-model="productDesc"></textarea>
+                                        {{!-- <div class="input-editor">
                                             <div class="js-description-editor"></div>
-                                        </div>
+                                        </div> --}}
                                     </div>
                                     <div class="col-12 col-md-6 form-group form-group--lg">
                                         <label class="form-label">Ürün Kodu</label>
@@ -1355,13 +1356,22 @@
             },
             created: function() {
                 setInterval(() => {
+                    /*
                     const qleditor = document.querySelector('.ql-editor p');
                     if(qleditor) {
-                        if(this.isEditing)
-                            qleditor.textContent = this.productDesc;
-                        else
+                        if(this.isEditing) {
+                            if(qleditor.textContent !== this.productDesc) {
+                                qleditor.textContent = this.productDesc;
+                                console.log('eşit değildi ve update oldu!');
+                            }
+                                
+                        }
+                        else {
                             this.productDesc = qleditor.textContent;
+                        }
+                            
                     }
+                    */
 
                     const stateElement = document.querySelectorAll('.select2-selection__rendered')[2];
                     if(stateElement) {

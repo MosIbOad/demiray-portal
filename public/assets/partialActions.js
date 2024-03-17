@@ -401,6 +401,14 @@ const app = new Vue({
               //alert('Sunucu ile iletişim kurulamadı.');
           }
         });
+      },
+      productContentText() {
+        if(this.showingProduct.productDescription) {
+          let content = this.showingProduct.productDescription;
+          //content = content.replace(/\n/g, '\n');
+          //content = content.replace(/(?:\r\n|\r|\n)/g, '\n');
+          return content.replace(/(?:\r\n|\r|\n)/g, '<br />');;
+        } else return '';
       }
     },
     mounted() {
