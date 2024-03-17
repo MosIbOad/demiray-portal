@@ -33,7 +33,7 @@
           <div class="exit-menu mt-2" @click="hideProductMenu"><i class="fa-regular fa-circle-xmark"></i></div>
           <div class="row pt-4 justify-content-between">
             <div class="col-sm-2" v-for="headerCategory in headerCategories" :key="headerCategory">
-              <div class="box py-3 d-flex align-items-center gap-2" @click="redirectSelectedPageCategory(headerCategory.categoryId, 1)"><span class="menu-img-base"><img src="/assets/images/1.png" alt=""></span>
+              <div class="box py-3 d-flex align-items-center gap-2" @click="redirectSelectedPageCategory(headerCategory.categoryId, 1)"><span class="menu-img-base"><img :src=`/assets/images/${headerCategory.categoryId}.png` alt=""></span>
                 <div class="text">
                   <p>[headerCategory.firstName]</p>
                   <p>[headerCategory.lastName]</p>
