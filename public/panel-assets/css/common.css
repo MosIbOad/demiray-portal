@@ -13695,3 +13695,19 @@ span.flatpickr-weekday {
 .auth-bg-image-light {
   display: none;
 }
+
+.product-textarea{
+  background-color: var(--background-primary-color) !important;
+  border-radius: 5px !important;
+  border: none !important;
+  outline: none !important;
+  resize: none !important;
+  height: 150px !important;
+}
+
+.product-textarea:focus{
+  border-color: transparent!important;
+  border: none !important;
+  background-color: var(--control-background-hover)!important;
+  box-shadow: none;
+} 
