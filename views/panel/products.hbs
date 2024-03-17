@@ -1314,6 +1314,7 @@
         </div>
     </div>
 </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
       const app = new Vue({
             el: '#app',
@@ -1551,11 +1552,11 @@
                     });
 
                     if(editingProducts.length === 0) {
-                        return alert("Düzenlemek istediğin ürünü seçmelisin.");
+                        return errorMessage("Düzenlemek istediğin ürünü seçmelisin.");
                     }
 
                     if(editingProducts.length !== 1) {
-                        return alert("en fazla 1 adet ürün düzenleyebilirsin!");
+                        return errorMessage("en fazla 1 adet ürün düzenleyebilirsin!");
                     }
 
                     //alert("düzenlenmek istenen ürün id: " + editingProducts[0]);
@@ -1623,49 +1624,52 @@
                 createOrEditProduct() {
                     if(!this.isEditing) {
                         if(this.productName.trim() === '') {
-                            return alert('Ürünün adını belirtmelisiniz!');
+                            return errorMessage('Ürünün adını belirtmelisiniz!');
                         }
                         if(this.selectedSubCategoryId === -1) {
-                            return alert('Alt kategori seçmelisiniz!');
+                            return errorMessage('Alt kategori seçmelisiniz!');
                         }
                         if(this.productDesc.trim() === '') {
-                            return alert('Ürünün açıklamasını belirtmelisiniz!');
+                            return errorMessage('Ürünün açıklamasını belirtmelisiniz!');
                         }
                         if(this.productCode.trim() === '') {
-                            return alert('Ürünün kodunu belirtmelisiniz!');
+                            return errorMessage('Ürünün kodunu belirtmelisiniz!');
                         }
                         if(this.productAmount === 0) {
-                            return alert('Ürünün kutu adetini belirtmelisiniz!');
+                            return errorMessage('Ürünün kutu adetini belirtmelisiniz!');
                         }
                         if(this.productModel.trim() === '') {
-                            return alert('Ürünün modelini belirtmelisiniz!');
+                            return errorMessage('Ürünün modelini belirtmelisiniz!');
                         }
                         if(this.productLength === 0) {
-                            return alert('Ürünün uzunluğunu belirtmelisiniz!');
+                            return errorMessage('Ürünün uzunluğunu belirtmelisiniz!');
                         }
                         if(this.productWidth === 0) {
-                            return alert('Ürünün genişliğini belirtmelisiniz!');
+                            return errorMessage('Ürünün genişliğini belirtmelisiniz!');
                         }
                         if(this.productThickness === 0) {
-                            return alert('Ürünün kalınlığını belirtmelisiniz!');
+                            return errorMessage('Ürünün kalınlığını belirtmelisiniz!');
                         }
                         if(this.productMaxStock === 0) {
-                            return alert('Ürünün maksimum stok değerini belirtmelisiniz!');
+                            return errorMessage('Ürünün maksimum stok değerini belirtmelisiniz!');
                         }
                         if(this.productPrice === 0) {
-                            return alert('Ürünün fiyatını belirtmelisiniz!');
+                            return errorMessage('Ürünün fiyatını belirtmelisiniz!');
                         }
                         if(this.selectedImage === null) {
-                            return alert('Ürün resmini seçmelisiniz!');
+                            return errorMessage('Ürün resmini seçmelisiniz!');
                         }
                         if(this.selectedSizeImage === null) {
-                            return alert('Ölçü fotoğrafını seçmelisiniz!');
+                            return errorMessage('Ölçü fotoğrafını seçmelisiniz!');
                         }
 
-                        this.showSuccessPage = true;
+                        
+                        //this.showSuccessPage = true;
+                        successMessage('Yeni ürün başarıyla eklendi! Yönlendiriliyorsunuz...', 2500);
                         setTimeout(() => {
-                            this.showSuccessPage = false;
-                        }, 1500);
+                            //this.showSuccessPage = false;
+                            window.location.reload();
+                        }, 3000);
 
                         const creatingData = {
                             productName: this.productName,
@@ -1726,7 +1730,10 @@
                             data: JSON.stringify({ pData: editingData, pId: this.lastProductId }),
                             success: function(response) {
                             if(response.success) {
-                                window.location.reload();
+                                successMessage('Ürün bilgileri başarıyla güncellendi! Yönlendiriliyorsunuz...');
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 2000);
                             }
                             },
                             error: function() {
@@ -1742,7 +1749,7 @@
                     });
 
                     if(deletingProducts.length === 0) {
-                        return alert("Silmek istediğin ürün veya ürünleri seçmelisin.");
+                        return errorMessage("Silmek istediğin ürün veya ürünleri seçmelisin.");
                     }
                     
                     //alert("silinmek istenen ürünler: " + JSON.stringify(deletingProducts));
@@ -1768,7 +1775,7 @@
                     });
 
                     if(archiveProducts.length === 0) {
-                        return alert("Arşive taşımak istediğin ürün veya ürünleri seçmelisin.");
+                        return errorMessage("Arşive taşımak istediğin ürün veya ürünleri seçmelisin.");
                     }
 
                     $.ajax({
@@ -1821,7 +1828,25 @@
                 }
         }
 
+function successMessage(text, delay = 1500) {
+  Swal.fire({
+    position: "center",
+    icon: "success",
+    title: text,
+    showConfirmButton: false,
+    timer: delay
+  });
+}
 
+function errorMessage(text, delay = 1500) {
+  Swal.fire({
+    position: "center",
+    icon: "error",
+    title: text,
+    showConfirmButton: false,
+    timer: delay
+  });
+}
     </script>
     <script src="/panel-assets/js/gsap/gsap.min.js"></script>
     <script src="/panel-assets/js/gsap/ScrollToPlugin.min.js"></script>

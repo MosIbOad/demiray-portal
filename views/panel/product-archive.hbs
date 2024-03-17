@@ -1318,6 +1318,7 @@
         </div>
     </div>
 </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
       const app = new Vue({
             el: '#app',
@@ -1413,7 +1414,7 @@
                     });
 
                     if(deletingArchiveProducts.length === 0) {
-                        return alert("İşlem yapmak istediğiniz ürün veya ürünleri seçmelisiniz.");
+                        return errorMessage("İşlem yapmak istediğiniz ürün veya ürünleri seçmelisiniz.");
                     }
 
                     $.ajax({
@@ -1441,7 +1442,7 @@
                     });
 
                     if(publishingArchiveProducts.length === 0) {
-                        return alert("İşlem yapmak istediğiniz ürün veya ürünleri seçmelisiniz.");
+                        return errorMessage("İşlem yapmak istediğiniz ürün veya ürünleri seçmelisiniz.");
                     }
 
                     $.ajax({
@@ -1480,6 +1481,27 @@
 
             }
         }
+
+
+        function successMessage(text, delay = 1500) {
+  Swal.fire({
+    position: "center",
+    icon: "success",
+    title: text,
+    showConfirmButton: false,
+    timer: delay
+  });
+}
+
+function errorMessage(text, delay = 1500) {
+  Swal.fire({
+    position: "center",
+    icon: "error",
+    title: text,
+    showConfirmButton: false,
+    timer: delay
+  });
+}
 
         
     </script>

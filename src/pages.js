@@ -132,7 +132,7 @@ router.post('/api/exitaction', (req, res) => {
     if(req.signedCookies['userId']) res.clearCookie('userId');
     if(req.signedCookies['isLogged']) res.clearCookie('isLogged');
 
-    return res.json({ success: true, redirectPage: '/login' });
+    return res.json({ success: true, redirectPage: '/' });
 });
 
 // login
@@ -228,7 +228,7 @@ router.post('/api/registeraction', async (req, res) => {
 // sepet
 router.get('/product-content', async (req, res) => {
     const isLogged = req.signedCookies['userId'];
-    if(!isLogged) return res.redirect('/');
+    //if(!isLogged) return res.redirect('/');
     let isAdmin = await checkIsAdmin(req);
 
     const { productId } = req.query;
@@ -236,7 +236,7 @@ router.get('/product-content', async (req, res) => {
     if(!productId) return;
 
     const userId = req.signedCookies['userId'];
-    if(!userId) return;
+    //if(!userId) return;
 
 
     let product = await database.getProductById(parseInt(productId));
@@ -398,7 +398,7 @@ router.post('/api/deletebasket', async (req, res) => {
     });
 
     user.basket = userBasketList;
-    await database.updateUserById(userId, user);
+    await database.updateUserBasketById(userId, JSON.stringify(user.basket));
 
     res.json({success: true, redirectPage: '/basket'});
     /*
@@ -485,7 +485,7 @@ router.get('/product', async (req, res) => {
     // const selectedType = req.session.lastCategorySelectedType;
     let { subCategoryId, selectedType, rndCategory } = req.query;
     const userId = req.signedCookies['userId'];
-    if(userId === undefined) res.redirect('/');
+    //if(userId === undefined) res.redirect('/');
 
     if(subCategoryId === undefined) {
         //subCategoryId = 0;

@@ -1079,6 +1079,7 @@
         </div>
     </div>
   </main>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script> 
             const app = new Vue({
             el: '#app',
@@ -1174,12 +1175,12 @@
                 });
                 
                 if(selectedUserListCount !== 1) {
-                  return alert('Kullanıcı düzenlemek için en fazla 1 kişi seçebilirsiniz.');
+                  return errorMessage('Kullanıcı düzenlemek için en fazla 1 kişi seçebilirsiniz.');
                 }
 
                 let selectedUser = this.userList.find(x => x.isChecked === true);
                 if(!selectedUser) {
-                  return alert('Bir hata oluştu!');
+                  return errorMessage('Bir hata oluştu!');
                 }
 
                 this.editOrCreateUser.nameSurName = selectedUser.userNameSurName;
@@ -1226,7 +1227,7 @@
                 });
 
                 if(bannedUserList.length <= 0) {
-                  return alert('İşlem yapmak için kullanıcı veya kullanıcıları seçmelisiniz!');
+                  return errorMessage('İşlem yapmak için kullanıcı veya kullanıcıları seçmelisiniz!');
                 }
 
                 $.ajax({
@@ -1253,7 +1254,7 @@
                 });
 
                 if(deletingUserList.length <= 0) {
-                  return alert('İşlem yapmak için kullanıcı veya kullanıcıları seçmelisiniz!');
+                  return errorMessage('İşlem yapmak için kullanıcı veya kullanıcıları seçmelisiniz!');
                 }
 
                 $.ajax({
@@ -1295,7 +1296,7 @@
                   let data = this.editOrCreateUser;
                   if(data.nameSurName.trim() === '' || data.commTitle.trim() === '' || data.taxNo === 0 || data.adress.trim() === '' ||
                   data.phone === 0 || data.mail.trim() === '' || data.password.trim() === '' || !data.mail.includes('@')) {
-                    alert('Eksik veya yanlış bilgiler doldurdunuz bilgileri tekrar kontrol edin');
+                    errorMessage('Eksik veya yanlış bilgiler doldurdunuz bilgileri tekrar kontrol edin');
 
                     setTimeout(()=> {
                     const successPanel = document.getElementById('addProductSuccess');
@@ -1339,6 +1340,28 @@
           error: function() {
           }
         });
+
+
+
+  function successMessage(text, delay = 1500) {
+  Swal.fire({
+    position: "center",
+    icon: "success",
+    title: text,
+    showConfirmButton: false,
+    timer: delay
+  });
+}
+
+function errorMessage(text, delay = 1500) {
+  Swal.fire({
+    position: "center",
+    icon: "error",
+    title: text,
+    showConfirmButton: false,
+    timer: delay
+  });
+}
     </script>
     <script src="/panel-assets/js/gsap/gsap.min.js"></script>
     <script src="/panel-assets/js/gsap/ScrollToPlugin.min.js"></script>

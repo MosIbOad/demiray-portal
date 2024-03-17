@@ -84,7 +84,7 @@ async function updateUserById(userId, updatedUser) {
         const {
             userName, userSurName, userCommercialTitle, userAdress, userMail,
             userPassword, userTaxNumber, userPhone, userRegisteredDate, userAdminLevel, 
-            isBanned, basket
+            isBanned
         } = updatedUser;
         console.log("typeof Basket: " + typeof basket);
 
@@ -93,12 +93,12 @@ async function updateUserById(userId, updatedUser) {
             UPDATE users 
             SET userName = ?, userSurName = ?, userCommercialTitle = ?, userAdress = ?, 
                 userMail = ?, userPassword = ?, userTaxNumber = ?, userPhone = ?, 
-                userRegisteredDate = ?, userAdminLevel = ?, isBanned = ?, basket = ?
+                userRegisteredDate = ?, userAdminLevel = ?, isBanned = ?
             WHERE userId = ?
         `;
         const values = [
             userName, userSurName, userCommercialTitle, userAdress, userMail,
-            userPassword, userTaxNumber, userPhone, userRegisteredDate, userAdminLevel, isBanned, JSON.stringify(basket),
+            userPassword, userTaxNumber, userPhone, userRegisteredDate, userAdminLevel, isBanned,
             userId
         ];
 

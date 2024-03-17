@@ -66,7 +66,9 @@
           <div class="product-item p-3">
             <div class="product-top-content d-flex justify-content-between">
               <div class="col-sm-3 product-price-discount badge bg-warning">Yeni</div>
+              {{#if isLogged}}
               <div class="col-sm-3 product-price-discount badge bg-danger" v-show="newProduct.productDiscountedPrice !== 0">[calcDiscount(newProduct.productDiscountedPrice, newProduct.productPrice)]%</div>
+              {{/if}}
             </div>
             <div class="product-image-base">
               <img :src=`${newProduct.productImage}` class="product-img" alt="">
@@ -74,8 +76,10 @@
             <div class="product-content p-2">
               <span class="product-title">[newProduct.productName]</span>
               <div class="row product-price-content mt-3 align-items-center justify-content-between">
+                {{#if isLogged}}
                 <div class="col-auto product-price-old" v-show="newProduct.productDiscountedPrice !== 0">[newProduct.productPrice.toLocaleString('de')]₺</div>
                 <div class="col-auto product-price-new">[newProduct.productDiscountedPrice <= 0 ? newProduct.productPrice : newProduct.productDiscountedPrice]₺</div>
+                {{/if}}
               </div>
             </div>
           </div>
