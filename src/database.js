@@ -86,6 +86,7 @@ async function updateUserById(userId, updatedUser) {
             userPassword, userTaxNumber, userPhone, userRegisteredDate, userAdminLevel, 
             isBanned, basket
         } = updatedUser;
+        console.log("typeof Basket: " + typeof basket);
 
         // Güncelleme sorgusu
         const query = `

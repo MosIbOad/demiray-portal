@@ -265,7 +265,8 @@ router.post('/api/selectproductbyid', async (req, res) => {
 });
 
 router.post('/api/addproducttobasket', async (req, res) => {
-    const { addingProductId, addingAmount } = req.body;
+    try {
+        const { addingProductId, addingAmount } = req.body;
     if(!addingProductId) return;
     const userId = req.signedCookies['userId'];
     if(!userId) return;
@@ -283,8 +284,7 @@ router.post('/api/addproducttobasket', async (req, res) => {
         return;
     }
 
-
-    let userBasketList = JSON.parse(user.basket);
+    let userBasketList = JSON.parse(user.basket);;
     let index = userBasketList.findIndex(x => x.productId === addingProductId);
     if(index === -1) {
         const basketData = {
@@ -307,7 +307,9 @@ router.post('/api/addproducttobasket', async (req, res) => {
     await database.updateUserBasketById(userId, JSON.stringify(user.basket));
 
     res.json({success: true, redirectPage: '/basket'});
-
+    } catch (error) {
+        
+    }
 });
 
 // sepet
@@ -444,6 +446,7 @@ router.post('/api/confirmbuyproduct', async (req, res) => {
     }
 
     user.basket = [];
+    console.log();
 
     await database.createOrder(userId, paymentType, buyingList);
     await database.updateUserById(user.userId, user);
