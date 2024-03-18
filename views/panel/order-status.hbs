@@ -967,6 +967,7 @@
       </main>
     </div>
   </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
       const app = new Vue({
             el: '#app',
@@ -1028,8 +1029,18 @@
                   contentType: 'application/json',
                   data: JSON.stringify({ confirmOrderData: confirmOrderData }),
                   success: function(response) {
+                    /*
                     if(response.success) {
                       window.location.href = response.redirectPage;
+                    }
+                    */
+                    if(response.successMessage) {
+                      successMessage(response.successMessage, response.waitTime);
+                      setTimeout(()=> window.location.href = response.redirectPage, response.waitTime);
+                    }
+                    if(response.errorMessage) {
+                      errorMessage(response.errorMessage, response.waitTime);
+                      setTimeout(()=> window.location.href = response.redirectPage, response.waitTime);
                     }
                   },
                   error: function() {
@@ -1052,6 +1063,27 @@
     window.onload = () => {
       app.orderData = _orderData;
     }
+
+
+    function successMessage(text, delay = 1500) {
+  Swal.fire({
+    position: "center",
+    icon: "success",
+    title: text,
+    showConfirmButton: false,
+    timer: delay
+  });
+}
+
+function errorMessage(text, delay = 1500) {
+  Swal.fire({
+    position: "center",
+    icon: "error",
+    title: text,
+    showConfirmButton: false,
+    timer: delay
+  });
+}
     </script>
     <script src="/panel-assets/js/gsap/gsap.min.js"></script>
     <script src="/panel-assets/js/gsap/ScrollToPlugin.min.js"></script>

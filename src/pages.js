@@ -337,6 +337,11 @@ router.post('/api/addproducttobasket', async (req, res) => {
         return;
     }
 
+    if(addingAmount < product.productMaxStock) {
+        res.json({ errorMessage: `Bu üründen en az ${product.productMaxStock} adet satın alabilirsiniz!` })
+        return;
+    }
+
     let userBasketList = JSON.parse(user.basket);;
     let index = userBasketList.findIndex(x => x.productId === addingProductId);
     if(index === -1) {
@@ -352,7 +357,7 @@ router.post('/api/addproducttobasket', async (req, res) => {
         // console.log("basketCount: "+ userBasketList[index].amount);
         // console.log("maxStock: " +product.productMaxStock);
 
-        if(userBasketList[index].amount + addingAmount <= product.productMaxStock)
+        if(userBasketList[index].amount + addingAmount <= product.productAmount)
             userBasketList[index].amount += addingAmount;
     }
     user.basket = userBasketList;
@@ -399,7 +404,7 @@ router.get('/basket', async (req, res) => {
                 name: product.productName,
                 img: product.productImage,
                 amount: x.amount,
-                maxStock: product.productMaxStock,
+                maxStock: product.productAmount,
                 price: product.productPrice,
                 discountedPrice: discountedPrice,
                 selected: true,
@@ -491,6 +496,10 @@ router.post('/api/confirmbuyproduct', async (req, res) => {
 
             if(product.productAmount < x.amount) {
                 return res.json({ errorMessage: `${product.productName} isimli ürünün yeteri kadar stoğu yok!`, waitTime: 5000 });
+            }
+
+            if(x.amount < product.productMaxStock) {
+                return res.json({ errorMessage: `${product.productName} isimli üründen en az ${product.productMaxStock} adet almalısınız!`, waitTime: 3000 });
             }
             product.productAmount -= x.amount;
             await database.updateProductById(product.productId, product);
@@ -925,6 +934,44 @@ router.post('/api/banusers', async (req, res) => {
     }
 });
 
+router.post('/api/makeadminusers', async (req, res) => {
+    try {
+        const { makingAdminList } = req.body;
+        if(makingAdminList === undefined) return;
+        
+        for(let i = 0; i < makingAdminList.length; i++) {
+            let id = makingAdminList[i];
+            let user = await database.getUserById(id);
+            if(user !== null) {
+                user.userAdminLevel = 5;
+                await database.updateUserById(user.userId, user);
+            }   
+        }
+        res.json({ successMessage: 'Seçili kullanıcılar başarıyla yönetici yapıldı!', waitTime: 1500 });
+     } catch (err) {
+        console.log(err);
+    }
+});
+
+router.post('/api/unmakeadminusers', async (req, res) => {
+    try {
+        const { unMakingAdminList } = req.body;
+        if(unMakingAdminList === undefined) return;
+        
+        for(let i = 0; i < unMakingAdminList.length; i++) {
+            let id = unMakingAdminList[i];
+            let user = await database.getUserById(id);
+            if(user !== null) {
+                user.userAdminLevel = 0;
+                await database.updateUserById(user.userId, user);
+            }   
+        }
+        res.json({ successMessage: 'Seçili kullanıcılar başarıyla yöneticilikten çıkartıldı!', waitTime: 2000 });
+    } catch (err) {
+        console.log(err);
+    }
+});
+
 router.post('/api/deleteusers', async (req, res) => {
     try {
         const { deletingUsers } = req.body;
@@ -1183,19 +1230,18 @@ router.get('/panel/order-status', async (req, res) => {
 router.post('/api/confirmorder', async (req, res) => {
     try {
         const { confirmOrderData } = req.body;
-        if(confirmOrderData === undefined) return res.json({ success: true, redirectPage: '/'});
+        if(confirmOrderData === undefined) return res.json({ errorMessage: 'Bir hata oluştu ana sayfaya yönlendiriliyorsunuz...', waitTime: 1500, redirectPage: '/'});
     
         let order = await database.getOrderById(confirmOrderData.orderId);
         if(order == null) {
-            return res.json({ success: true, redirectPage: '/'});
+            return res.json({ errorMessage: 'Ürün bulunamadı ana sayfaya yönlendiriliyorsunuz...', waitTime: 1500, redirectPage: '/'});
         }
         let user = await database.getUserById(order.orderOwner);
-        if(user === null) return res.json({ success: true, redirectPage: '/'});
+        if(user === null) return res.json({ errorMessage: 'Kullanıcı bulunamadı ana sayfaya yönlendiriliyorsunuz...', waitTime: 1500, redirectPage: '/'});
         order.orderStatus = confirmOrderData.newStatus;
         await database.updateOrderById(order.orderId, order);
 
         if(confirmOrderData.reportCustomer === true) {
-        
             if(order.orderStatus === 0) { // 
                 let content = mailAPI.orderWaitingHTML(order.orderId, confirmOrderData.note);
                 mailAPI.sendEmail(user.userMail, 'Sipariş Bekliyor', content);
@@ -1210,9 +1256,19 @@ router.post('/api/confirmorder', async (req, res) => {
             }
         }
 
+        if(order.orderStatus === 0) {
+            res.json({ successMessage: 'Sipariş beklemeye alındı ana sayfaya yönlendiriliyorsunuz...', waitTime: 2000, redirectPage: 'orders-total' })
+        } else if(order.orderStatus === 1) {
+            res.json({ successMessage: 'Sipariş başarıyla onaylandı ana sayfaya yönlendiriliyorsunuz...', waitTime: 2000, redirectPage: 'orders-total' });
+        } else if(order.orderStatus === 2) {
+            res.json({ successMessage: 'Sipariş iptal edildi ana sayfaya yönlendiriliyorsunuz...', waitTime: 2000, redirectPage: 'orders-total' });
+        }
+
+        /*
         setTimeout(() => {
             res.json({ success: true, redirectPage: 'orders-total' });
         }, 1500);
+        */
     } catch (err) {
         console.log(err);
     }

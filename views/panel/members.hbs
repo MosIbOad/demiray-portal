@@ -906,21 +906,16 @@
                                             <div class="dropdown-items dropdown-items--right">
                                                 <div class="dropdown-items__container">
                                                     <ul class="dropdown-items__list">
-                                                        <li class="dropdown-items__item" @click="editUser"><a class="dropdown-items__link"><span class="dropdown-items__link-icon">
-                                    <svg class="icon-icon-view">
-                                      <use xlink:href="#icon-view"></use>
-                                    </svg></span>Düzenle</a>
-                                                        </li>
-                                                        <li class="dropdown-items__item" @click="banUser"><a class="dropdown-items__link"><span class="dropdown-items__link-icon">
-                                    <svg class="icon-icon-archive">
-                                      <use xlink:href="#icon-archive"></use>
-                                    </svg></span>Yasakla</a>
-                                                        </li>
-                                                        <li class="dropdown-items__item" @click="deleteUser"><a class="dropdown-items__link"><span class="dropdown-items__link-icon">
-                                    <svg class="icon-icon-trash">
-                                      <use xlink:href="#icon-trash"></use>
-                                    </svg></span>Sil</a>
-                                                        </li>
+                                                      <li class="dropdown-items__item" @click="editUser"><a class="dropdown-items__link">Düzenle</a>
+                                                      </li>
+                                                      <li class="dropdown-items__item" @click="banUser"><a class="dropdown-items__link">Yasakla</a>
+                                                      </li>
+                                                      <li class="dropdown-items__item" @click="makeToAdmin"><a class="dropdown-items__link">Yetkilendir</a>
+                                                      </li>
+                                                      <li class="dropdown-items__item" @click="unMakeToAdmin"><a class="dropdown-items__link">Yetkiyi Kaldır</a>
+                                                      </li>
+                                                      <li class="dropdown-items__item" @click="deleteUser"><a class="dropdown-items__link">Sil</a>
+                                                      </li>
                                                     </ul>
                                                 </div>
                                             </div>
@@ -1246,6 +1241,92 @@
 
                 //alert("Banlanmak istenen kullanıcılar: " + JSON.stringify(bannedUserList));
               },
+              makeToAdmin() {
+                  Swal.fire({
+                    title: "İşlemi gerçekleştirmek istediğine emin misin?",
+                    text: "Seçili kullanıcılar yönetici olarak ayarlanıcak",
+                    icon: "warning",
+                    showCancelButton: true,
+                    cancelButtonText: 'Vazgeç',
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Evet"
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      let makingAdminList = [];
+                      this.userList.forEach(x => {
+                        if(x.isChecked)
+                          makingAdminList.push(x.userId);
+                      });
+
+                      if(makingAdminList.length <= 0) {
+                        return errorMessage('İşlem yapmak için kullanıcı veya kullanıcıları seçmelisiniz!');
+                      }
+
+                      $.ajax({
+                        url: '/api/makeadminusers',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ makingAdminList: makingAdminList }),
+                        success: function(response) {
+                        if(response.successMessage) {
+                          successMessage(response.successMessage, response.waitTime);
+                          setTimeout(()=> window.location.reload(), response.waitTime);
+                        }
+                        if(response.errorMessage) {
+                          errorMessage(response.errorMessage, response.waitTime);
+                          setTimeout(()=> window.location.reload(), response.waitTime);
+                        }
+                        },
+                        error: function() {
+                        }
+                      });
+                    }
+                  });
+              },
+              unMakeToAdmin() {
+                  Swal.fire({
+                    title: "İşlemi gerçekleştirmek istediğine emin misin?",
+                    text: "Seçili kullanıcılar artık yönetici olmayacak",
+                    icon: "warning",
+                    showCancelButton: true,
+                    cancelButtonText: 'Vazgeç',
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Evet"
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      let unMakingAdminList = [];
+                      this.userList.forEach(x => {
+                      if(x.isChecked)
+                        unMakingAdminList.push(x.userId);
+                      });
+
+                      if(unMakingAdminList.length <= 0) {
+                        return errorMessage('İşlem yapmak için kullanıcı veya kullanıcıları seçmelisiniz!');
+                      }
+
+                      $.ajax({
+                        url: '/api/unmakeadminusers',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ unMakingAdminList: unMakingAdminList }),
+                        success: function(response) {
+                        if(response.successMessage) {
+                          successMessage(response.successMessage, response.waitTime);
+                          setTimeout(()=> window.location.reload(), response.waitTime);
+                        }
+                        if(response.errorMessage) {
+                          errorMessage(response.errorMessage, response.waitTime);
+                          setTimeout(()=> window.location.reload(), response.waitTime);
+                        }
+                        },
+                        error: function() {
+                        }
+                      });
+                    }
+                  });
+              },
               deleteUser() {
                 let deletingUserList = [];
                 this.userList.forEach(x => {
@@ -1362,6 +1443,7 @@ function errorMessage(text, delay = 1500) {
     timer: delay
   });
 }
+
     </script>
     <script src="/panel-assets/js/gsap/gsap.min.js"></script>
     <script src="/panel-assets/js/gsap/ScrollToPlugin.min.js"></script>
