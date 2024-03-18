@@ -47,7 +47,7 @@ async function confirmUnverifiedUserById(unverifiedUserId) {
     } catch (error) {
         // Hata yönetimi
         console.error('Kullanıcı oluşturulurken bir hata meydana geldi:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -74,7 +74,7 @@ async function createUser(name, surName, commTitle, adress, mail, password, taxN
     } catch (error) {
         // Hata yönetimi
         console.error('Kullanıcı oluşturulurken bir hata meydana geldi:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -116,7 +116,7 @@ async function updateUserById(userId, updatedUser) {
     } catch (error) {
         // Hata yönetimi
         console.error('Kullanıcı güncellenirken bir hata meydana geldi:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -146,7 +146,7 @@ async function banUserById(userId, banned) {
     } catch (error) {
         // Hata yönetimi
         console.error('Kullanıcı güncellenirken bir hata meydana geldi:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -169,7 +169,7 @@ async function updateUserBasketById(userId, basket) {
         return results;
     } catch (error) {
         console.error('Kullanıcı güncellenirken bir hata meydana geldi:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -200,7 +200,7 @@ async function updateUserPassword(userId, newPassword) {
     } catch (error) {
         // Hata yönetimi
         console.error('Kullanıcı güncellenirken bir hata meydana geldi:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -227,7 +227,7 @@ async function createUnverifiedUser(name, surName, commTitle, adress, mail, pass
     } catch (error) {
         // Hata yönetimi
         console.error('Kullanıcı oluşturulurken bir hata meydana geldi:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -271,7 +271,7 @@ async function createProduct(name, category, subCategory, description, code, amo
     } catch (error) {
         // Hata yönetimi
         console.error('Ürün oluşturulurken bir hata meydana geldi:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -312,7 +312,7 @@ async function updateProductById(productId, updatedProduct) {
     } catch (error) {
         // Hata yönetimi
         console.error('Kullanıcı güncellenirken bir hata meydana geldi:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -335,7 +335,7 @@ async function getProductById(id) {
         }
     } catch (error) {
         console.error('An error occurred while fetching the user:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -358,7 +358,7 @@ async function getProductByCode(code) {
         }
     } catch (error) {
         console.error('An error occurred while fetching the user:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -385,7 +385,7 @@ async function getUserByName(username) {
         }
     } catch (error) {
         console.error('An error occurred while fetching the user:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -408,7 +408,7 @@ async function getUserByMail(userMail) {
         }
     } catch (error) {
         console.error('An error occurred while fetching the user:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -431,7 +431,7 @@ async function getUserById(userId) {
         }
     } catch (error) {
         console.error('An error occurred while fetching the user:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -454,7 +454,7 @@ async function getUnverifiedUserById(userId) {
         }
     } catch (error) {
         console.error('An error occurred while fetching the user:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -473,7 +473,7 @@ async function getAllUsers() {
         return rows; // Tüm kullanıcıları döndür
     } catch (error) {
         console.error('An error occurred while fetching all users:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -492,7 +492,7 @@ async function getCategories() {
         return rows; // Tüm kullanıcıları döndür
     } catch (error) {
         console.error('An error occurred while fetching all categories:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -511,7 +511,7 @@ async function getAllProducts() {
         return rows; // Tüm kullanıcıları döndür
     } catch (error) {
         console.error('An error occurred while fetching all users:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -530,7 +530,7 @@ async function getArchiveProducts() {
         return rows; // Tüm kullanıcıları döndür
     } catch (error) {
         console.error('An error occurred while fetching all users:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -549,7 +549,7 @@ async function getSubCategories() {
         return rows; // Tüm kullanıcıları döndür
     } catch (error) {
         console.error('An error occurred while fetching all sub categories:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -568,7 +568,7 @@ async function getAllUnverifiedUsers() {
         return rows; // Tüm kullanıcıları döndür
     } catch (error) {
         console.error('An error occurred while fetching all users:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -594,7 +594,7 @@ async function deleteUserById(userId) {
         }
     } catch (error) {
         console.error('An error occurred while deleting the user:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -619,7 +619,7 @@ async function deleteUnverifiedUserById(userId) {
         }
     } catch (error) {
         console.error('An error occurred while deleting the user:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -644,7 +644,7 @@ async function deleteProductById(productId) {
         }
     } catch (error) {
         console.error('An error occurred while deleting the product:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -671,7 +671,7 @@ async function createOrder(orderOwner, paymentType, orderData) {
     } catch (error) {
         // Hata yönetimi
         console.error('Sipariş oluşturulurken bir hata meydana geldi:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -707,7 +707,7 @@ async function updateOrderById(orderId, updatedOrder) {
     } catch (error) {
         // Hata yönetimi
         console.error('Sipariş güncellenirken bir hata meydana geldi:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -730,7 +730,7 @@ async function getOrderById(orderId) {
         }
     } catch (error) {
         console.error('An error occurred while fetching the order:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -750,7 +750,7 @@ async function getUserOrders(userId) {
         return rows; // Tüm kullanıcıları döndür
     } catch (error) {
         console.error('An error occurred while fetching all users:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -769,7 +769,7 @@ async function getAllOrders() {
         return rows; // Tüm kullanıcıları döndür
     } catch (error) {
         console.error('An error occurred while fetching all users:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -794,7 +794,7 @@ async function deleteOrderById(orderId) {
         }
     } catch (error) {
         console.error('An error occurred while deleting the product:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -815,7 +815,7 @@ async function createDiscount(userId, productId, newDiscountPrice) {
     } catch (error) {
         // Hata yönetimi
         console.error('İndirim oluşturulurken bir hata meydana geldi:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -851,7 +851,7 @@ async function updateDiscountById(discountId, updatedDiscount) {
     } catch (error) {
         // Hata yönetimi
         console.error('Sipariş güncellenirken bir hata meydana geldi:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -874,7 +874,7 @@ async function getDiscountById(discountId) {
         }
     } catch (error) {
         console.error('An error occurred while fetching the order:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -893,7 +893,7 @@ async function getDiscountsByProductId(productId) {
         return rows; // Tüm kullanıcıları döndür
     } catch (error) {
         console.error('An error occurred while fetching all users:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -912,7 +912,7 @@ async function getAllDiscounts() {
         return rows; // Tüm kullanıcıları döndür
     } catch (error) {
         console.error('An error occurred while fetching all users:', error);
-        throw error;
+        return null;
     }
 }
 
@@ -937,7 +937,7 @@ async function deleteDiscountById(discountId) {
         }
     } catch (error) {
         console.error('An error occurred while deleting the product:', error);
-        throw error;
+        return null;
     }
 }
 

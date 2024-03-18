@@ -122,6 +122,11 @@
                     if(response.errorMessage) {
                       errorMessage(response.errorMessage, response.waitTime);
                     }
+                    if(response.success) {
+                      setTimeout(()=> {
+                         window.location.href = response.redirectPage;
+                      }, response.waitTime);
+                    }
                   },
                   error: function() {
                       //alert('Sunucu ile iletişim kurulamadı.');

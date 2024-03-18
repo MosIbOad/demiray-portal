@@ -96,18 +96,23 @@ let categoryList = [
 
 // ana sayfa
 router.get('/', async (req, res) => {
-    const isLogged = req.signedCookies['userId'];
-    let isAdmin = await checkIsAdmin(req);
+    try {
+        const isLogged = req.signedCookies['userId'];
+        let isAdmin = await checkIsAdmin(req);
 
-    res.render('index', { isLogged: isLogged, isAdmin: isAdmin});
+        res.render('index', { isLogged: isLogged, isAdmin: isAdmin});
     //res.json({ data: 'Hello!' });
+    } catch (error) {
+        console.log(error);
+    }
 });
 
 router.get('/api/loadheadercategories', async (req, res) => {
-    let categories = await database.getCategories();
-    let subCategories = await database.getSubCategories();
+    try {
+        let categories = await database.getCategories();
+        let subCategories = await database.getSubCategories();
 
-    categories.forEach(x =>  {
+        categories.forEach(x =>  {
         let parts = x.categoryName.split(' ');
 
         const lastName = parts.pop();
@@ -116,38 +121,57 @@ router.get('/api/loadheadercategories', async (req, res) => {
         x.lastName = lastName;
         x.firstName = firstName;
         x.subCategories = subCategories.filter(j => j.categoryId == x.categoryId);
-    });
+        });
     //console.log(categories);
-    return res.json({ success: true, headerCategories: categories});
+        return res.json({ success: true, headerCategories: categories});    
+    } catch (error) {
+        console.log(error);
+    } 
 });
 
 router.get('/api/loadproducts', async (req, res) => {
-    newProducts = await getNewProducts();
-    return res.json({ success: true, newProducts: newProducts, categoryList: categoryList });
+    try {
+        newProducts = await getNewProducts();
+        return res.json({ success: true, newProducts: newProducts, categoryList: categoryList });
+    } catch (err) {
+        console.log(err);
+    }
 });
 
 router.post('/api/exitaction', (req, res) => {
-    //const { exit } = req.body;
+    try {
+            //const { exit } = req.body;
     if(req.signedCookies['rememberMe']) res.clearCookie('rememberMe');
     if(req.signedCookies['userId']) res.clearCookie('userId');
     if(req.signedCookies['isLogged']) res.clearCookie('isLogged');
 
     return res.json({ success: true, redirectPage: '/' });
+    
+    } catch (err) {
+        console.log(err);    
+    }
 });
 
 // login
 router.get('/login', (req, res) => {
-    const isLogged = req.signedCookies['userId'];
-    if(isLogged) {
-        res.redirect('/');
-        return;
+    try {
+        const isLogged = req.signedCookies['userId'];
+        if(isLogged) {
+            res.redirect('/');
+            return;
+        }
+    
+        res.render('login'); 
+
+    } catch (err) {
+        console.log(err);
     }
 
-    res.render('login');
 });
 
 router.post('/api/loginaction', async (req, res) => {
-   const { loginData } = req.body;
+    try {
+        const { loginData } = req.body;
    if(!loginData) return;
    //console.log(loginData.mail);
    let user = await database.getUserByMail(loginData.mail);
@@ -173,25 +197,39 @@ router.post('/api/loginaction', async (req, res) => {
     //res.json({ infoMessage: 'Mail veya şifre hatalı!' });
     return res.json({ success: false, errorMessage: 'Mail veya şifre hatalı!', waitTime: 2000});
    }
+
+    } catch (err) {
+        console.log(err);   
+    }
 });
 
 async function checkUserMailAndPassword(passwordInput, hashedPassword) {
-    const passwordCorrect = await bcrypt.compare(passwordInput, hashedPassword);
-    return passwordCorrect;
+    try {
+        const passwordCorrect = await bcrypt.compare(passwordInput, hashedPassword);
+        return passwordCorrect;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
 }
 
 // login
 router.get('/register', (req, res) => {
-    const isLogged = req.signedCookies['userId'];
-    if(isLogged) {
-        res.redirect('/');
-        return;
+    try {
+        const isLogged = req.signedCookies['userId'];
+        if(isLogged) {
+            res.redirect('/');
+            return;
+        }
+    
+        res.render('register');
+    } catch (err) {
+        console.log(err);
     }
-
-    res.render('register');
 });
 
 router.post('/api/registeraction', async (req, res) => {
+    try {
     const { registerData } = req.body;
     if(!registerData) return;
 
@@ -222,13 +260,17 @@ router.post('/api/registeraction', async (req, res) => {
     database.createUnverifiedUser(registerData.userName, registerData.userSurName, registerData.userCommercialTitle, registerData.userAdress, registerData.userMail,
     registerData.userPassword, registerData.userTaxNumber, registerData.userPhone, new Date());
     
-    res.json({successMessage: "Kayıt işlemi başarılı!", waitTime: 1500});
+    res.json({successMessage: "Kayıt işlemi başarılı!", waitTime: 1500, success: true, redirectPage: '/'});
     let mailText = mailAPI.userComingForAdminText();
-    await sendMailToAdmins('Yeni Üye Kayıt İşlemi', mailText);
+    //await sendMailToAdmins('Yeni Üye Kayıt İşlemi', mailText);
+    } catch (err) {
+        console.log(err);
+    }
 });
 
 // sepet
 router.get('/product-content', async (req, res) => {
+    try {
     const isLogged = req.signedCookies['userId'];
     //if(!isLogged) return res.redirect('/');
     let isAdmin = await checkIsAdmin(req);
@@ -251,11 +293,17 @@ router.get('/product-content', async (req, res) => {
 
     const showingProduct = product;
     res.render('product-content', { isLogged: isLogged, isAdmin: isAdmin, showingProduct: showingProduct });
+
+    } catch (err) {
+        console.log(err);
+    }
+    
 });
 
 router.post('/api/selectproductbyid', async (req, res) => {
-    const { productId } = req.body;
-    if(!productId) return;
+    try {
+        const { productId } = req.body;
+        if(!productId) return;
     /*
     console.log('selectedProductId: ' + productId);
     let product = await database.getProductById(productId);
@@ -263,7 +311,10 @@ router.post('/api/selectproductbyid', async (req, res) => {
     */
     //req.session.lastSelectedProductId = productId;
 
-    res.json({ success: true, redirectPage: `/product-content?productId=${productId}` });
+        res.json({ success: true, redirectPage: `/product-content?productId=${productId}` });
+    } catch (err) {
+        console.log(err);
+    }
 });
 
 router.post('/api/addproducttobasket', async (req, res) => {
@@ -310,13 +361,14 @@ router.post('/api/addproducttobasket', async (req, res) => {
 
     res.json({success: true, redirectPage: '/basket'});
     } catch (error) {
-        
+        console.log(error);
     }
 });
 
 // sepet
 router.get('/basket', async (req, res) => {
-    const isLogged = req.signedCookies['userId'];
+    try {
+        const isLogged = req.signedCookies['userId'];
     if(!isLogged) return res.redirect('/');
     let isAdmin = await checkIsAdmin(req);
 
@@ -374,13 +426,15 @@ router.get('/basket', async (req, res) => {
         }
     });
     */
-
-
     res.render('basket', { isLogged: isLogged, isAdmin: isAdmin, basketData: basketData });
+    } catch (err) {
+        console.log(err);
+    }
 });
 
 router.post('/api/deletebasket', async (req, res) => {
-    const { deletingBasketList } = req.body;
+    try {
+        const { deletingBasketList } = req.body;
 
     const userId = parseInt(req.signedCookies['userId']);
     if(!userId) return;
@@ -407,11 +461,15 @@ router.post('/api/deletebasket', async (req, res) => {
     console.log(userBasket);
 
     console.log(deletingBasketList);
-    */
+    */   
+    } catch (err) {
+        console.log(err);
+    }
 });
 
 router.post('/api/confirmbuyproduct', async (req, res) => {
-    const { buyingProducts, paymentType } = req.body;
+    try {
+        const { buyingProducts, paymentType } = req.body;
     if(buyingProducts === undefined || paymentType === undefined) return res.json({errorMessage: 'Bir hata oluştu daha sonra tekrar deneyin!'});
     const userId = parseInt(req.signedCookies['userId']);
     if(!userId) return res.json({errorMessage: 'Bir hata oluştu daha sonra tekrar deneyin!'});;
@@ -473,12 +531,15 @@ router.post('/api/confirmbuyproduct', async (req, res) => {
     */
 
     //await database.createOrder(userId, paymentType, );
-
+    } catch (err) {
+        console.log(err);
+    }
 });
 
 // sepet
 router.get('/product', async (req, res) => {
-    // console.log('subCategoryId: ' + subCategoryId);
+    try {
+        // console.log('subCategoryId: ' + subCategoryId);
 
     const isLogged = req.signedCookies['userId'];
     let isAdmin = await checkIsAdmin(req);
@@ -563,10 +624,15 @@ router.get('/product', async (req, res) => {
     }
 
     res.render('product', { isLogged: isLogged, isAdmin: isAdmin, productOtherData: productOtherData, rndCategory: rndCategory });
+
+    } catch (err) {
+        console.log(err);    
+    }
 });
 
 router.post('/api/sendtoproductpage', async (req, res) => {
-    const { subCategoryId, selectedType } = req.body;
+    try {
+        const { subCategoryId, selectedType } = req.body;
     if(subCategoryId === undefined || selectedType === undefined) {
         console.log('subCategory data not found!'); 
         return; 
@@ -577,169 +643,119 @@ router.post('/api/sendtoproductpage', async (req, res) => {
     
 
     res.json({ success: true, redirectPage: `/product?subCategoryId=${subCategoryId}&selectedType=${selectedType}` });
+    } catch (err) {
+        console.log(err);
+    }
 });
-/*
-router.get('/api/loadproductpagedatas', async (req, res) => {
-    const subCategoryId = req.session.lastSubCategory;
-    const selectedType = req.session.lastCategorySelectedType
-    // const subCategoryId = myStorage.getData('lastSubCategory');
-    // const selectedType = parseInt(myStorage.getData('lastCategorySelectedType'));
-
-    if(subCategoryId === undefined) {
-        console.log('subCategoryId not found! (mystorage)');
-        return;
-    }
-
-    if(selectedType === undefined) {
-        console.log('subCategoryId not found! (mystorage)');
-        return;
-    }
-
-    let products = await database.getAllProducts();
-
-    if(selectedType === 0) {
-        let categories = await database.getCategories();
-        let subCategories = await database.getSubCategories();
-        let selectedSubCategory = subCategories.find(x => x.subCategoryId == parseInt(subCategoryId));
-        
-        if(!selectedSubCategory) {
-            console.log('alt kategori bulunamadı!');
-            return;
-        }
-    
-        let selectedHeadCategory = categories.filter(x => x.categoryId === selectedSubCategory.categoryId);
-        if(!selectedHeadCategory) {
-            console.log('ana kategori bulunamadı!');
-            return;
-        }
-    
-        let selectedSubCategories = subCategories.filter(x => x.categoryId === selectedSubCategory.categoryId);
-        if(!selectedSubCategories) {
-            console.log('alt kategoriler bulunamadı!');
-            return;
-        }
-    
-        console.log(selectedHeadCategory[0].categoryName);
-    
-        res.json({ success: true, redirectPage: '/product', headCategoryName: selectedHeadCategory[0].categoryName, subCategories: selectedSubCategories, selectedType: selectedType, products: products });
-    }
-    else if(selectedType === 1) {
-        let categories = await database.getCategories();
-        let subCategories = await database.getSubCategories();
-
-        let selectedHeadCategory = categories.filter(x => x.categoryId == subCategoryId);
-        if(!selectedHeadCategory) {
-            console.log('ana kategori bulunamadı!');
-            return;
-        }
-
-        let selectedSubCategories = subCategories.filter(x => x.categoryId === selectedHeadCategory[0].categoryId);
-        if(!selectedSubCategories) {
-            console.log('alt kategoriler bulunamadı!');
-            return;
-        }
-
-        res.json({ success: true, redirectPage: '/product', headCategoryName: selectedHeadCategory[0].categoryName, subCategories: selectedSubCategories, selectedType: selectedType, products: products });
-    }
-
-    console.log('products laoded!!');
-});
-*/
 
 async function checkIsAdmin(req) {
-    let adminLevel = 0;
-    const reqAdminLevel = 5;
+    try {
+        let adminLevel = 0;
+        const reqAdminLevel = 5;
 
-    if(req.signedCookies['userId']) {
-        let userId = parseInt(req.signedCookies['userId']);
-        let user = await database.getUserById(userId);
-        if(user !== null) {
-            adminLevel = user.userAdminLevel;
+        if(req.signedCookies['userId']) {
+            let userId = parseInt(req.signedCookies['userId']);
+            let user = await database.getUserById(userId);
+            if(user !== null) {
+                adminLevel = user.userAdminLevel;
+            }
         }
-    }
 
-    const isAdmin = adminLevel === reqAdminLevel ? true : false;
-    return isAdmin;
+        const isAdmin = adminLevel === reqAdminLevel ? true : false;
+        return isAdmin;
+    } catch (err) {
+        console.log(err);
+        return false;   
+    }
 }
 
 // PANEL
 router.get('/panel/current_accounts', async (req, res) => {
-    if(!req.signedCookies['userId']) {
-        return res.redirect('/');
-    }
-    let userId = parseInt(req.signedCookies['userId']);
-    let user = await database.getUserById(userId);
-    if(user === null) {
-        console.log('kullanıcı bulunamadı!');
-        return res.redirect('/');
-    }
-    if(user.userAdminLevel !== 5) return res.redirect('/');
-
-    let orders = await database.getAllOrders();
-    const currentAccounts = orders.filter(x => x.orderStatus === 1);
-
-    for (let i = 0; i < currentAccounts.length; i++) {
-        let x = currentAccounts[i];
-        let customer = await database.getUserById(x.orderOwner);
-        
-        x.nameSurName = `${customer.userName} ${customer.userSurName}`;
-        x.commTitle = customer.userCommercialTitle;
-        x.taxNumber = customer.userTaxNumber;
-        x.adress = customer.userAdress;
-        x.phone = customer.userPhone;
-        x.registerDate = customer.userRegisteredDate;
-        x.mail = customer.userMail;
-        x.orderData = JSON.parse(x.orderData);
-    }
+    try {
+        if(!req.signedCookies['userId']) {
+            return res.redirect('/');
+        }
+        let userId = parseInt(req.signedCookies['userId']);
+        let user = await database.getUserById(userId);
+        if(user === null) {
+            console.log('kullanıcı bulunamadı!');
+            return res.redirect('/');
+        }
+        if(user.userAdminLevel !== 5) return res.redirect('/');
     
-
-    res.render('panel/current_accounts', { userName: user.userName, currentAccounts: currentAccounts });
+        let orders = await database.getAllOrders();
+        const currentAccounts = orders.filter(x => x.orderStatus === 1);
+    
+        for (let i = 0; i < currentAccounts.length; i++) {
+            let x = currentAccounts[i];
+            let customer = await database.getUserById(x.orderOwner);
+            
+            x.nameSurName = `${customer.userName} ${customer.userSurName}`;
+            x.commTitle = customer.userCommercialTitle;
+            x.taxNumber = customer.userTaxNumber;
+            x.adress = customer.userAdress;
+            x.phone = customer.userPhone;
+            x.registerDate = customer.userRegisteredDate;
+            x.mail = customer.userMail;
+            x.orderData = JSON.parse(x.orderData);
+        }
+        
+    
+        res.render('panel/current_accounts', { userName: user.userName, currentAccounts: currentAccounts });
+    } catch (err) {
+        console.log(err);
+    }
 });
 router.get('/panel/discount', async (req, res) => {
-    if(!req.signedCookies['userId']) {
-        return res.redirect('/');
-    }
-    let userId = parseInt(req.signedCookies['userId']);
-    let user = await database.getUserById(userId);
-    if(user === null) {
-        console.log('kullanıcı bulunamadı!');
-        return res.redirect('/');
-    }
-    if(user.userAdminLevel !== 5) return res.redirect('/');
-
-    let userList = await database.getAllUsers();
-    let safeUserList = [];
-
-    for(var i = 0; i < userList.length; i++) {
-        let newUser = {
-            nameSurName: `${userList[i].userName} ${userList[i].userSurName}`,
-            userId: userList[i].userId,
-            //userSurName: userList[i].userSurName,
-            userCommercialTitle: userList[i].userCommercialTitle,
-            userAdress: userList[i].userAdress,
-            userMail: userList[i].userMail,
-            userTaxNumber: userList[i].userTaxNumber,
-            userPhone: userList[i].userPhone,
-            userRegisteredDate: userList[i].userRegisteredDate,
-            selected: false,
-            isBanned: userList[i].isBanned   
+    try {
+        if(!req.signedCookies['userId']) {
+            return res.redirect('/');
         }
-        safeUserList.push(newUser);
+        let userId = parseInt(req.signedCookies['userId']);
+        let user = await database.getUserById(userId);
+        if(user === null) {
+            console.log('kullanıcı bulunamadı!');
+            return res.redirect('/');
+        }
+        if(user.userAdminLevel !== 5) return res.redirect('/');
+    
+        let userList = await database.getAllUsers();
+        let safeUserList = [];
+    
+        for(var i = 0; i < userList.length; i++) {
+            let newUser = {
+                nameSurName: `${userList[i].userName} ${userList[i].userSurName}`,
+                userId: userList[i].userId,
+                //userSurName: userList[i].userSurName,
+                userCommercialTitle: userList[i].userCommercialTitle,
+                userAdress: userList[i].userAdress,
+                userMail: userList[i].userMail,
+                userTaxNumber: userList[i].userTaxNumber,
+                userPhone: userList[i].userPhone,
+                userRegisteredDate: userList[i].userRegisteredDate,
+                selected: false,
+                isBanned: userList[i].isBanned   
+            }
+            safeUserList.push(newUser);
+        }
+    
+        let products = await database.getAllProducts();
+        products.forEach(x => {
+            x.selected = false;
+        });
+    
+        let categories = await database.getCategories();
+        let subCategories = await database.getSubCategories();
+    
+        res.render('panel/discount', { userName: user.userName, users: safeUserList, products: products, categories: categories, subCategories: subCategories });
+    } catch (err) {
+        console.log(err);   
     }
-
-    let products = await database.getAllProducts();
-    products.forEach(x => {
-        x.selected = false;
-    });
-
-    let categories = await database.getCategories();
-    let subCategories = await database.getSubCategories();
-
-    res.render('panel/discount', { userName: user.userName, users: safeUserList, products: products, categories: categories, subCategories: subCategories });
 });
 
 router.post('/api/addproductdiscount', async (req, res) => {
-    const { addingDiscountProduct, addingUsers, newPrice } = req.body;
+    try {
+        const { addingDiscountProduct, addingUsers, newPrice } = req.body;
     if(newPrice === null) {
         return res.json({ errorMessage: 'Hatalı bir miktar girişi yaptınız! Tekrar deneyin.', waitTime: 3000 }); 
     }
@@ -752,539 +768,662 @@ router.post('/api/addproductdiscount', async (req, res) => {
         await database.createDiscount(userId, addingDiscountProduct.productId, newPrice);
     }
 
-    res.json({ successMessage: 'Seçilen kullanıcılara özel indirim başarıyla yapıldı!', waitTime: 3000 });
+    res.json({ successMessage: 'Seçilen kullanıcılara özel indirim başarıyla yapıldı!', waitTime: 3000 });   
+    } catch (err) {
+        console.log(err);
+    }
 });
 
 router.post('/api/removeproductdiscount', async (req, res) => {
-    const { removingDiscountProduct } = req.body;
-    if(removingDiscountProduct === undefined) {
-        return res.json({ errorMessage: 'Bir hata oluştu! Sayfayı yenileyip tekrar deneyin.', waitTime: 3000 });
+    try {
+        const { removingDiscountProduct } = req.body;
+        if(removingDiscountProduct === undefined) {
+            return res.json({ errorMessage: 'Bir hata oluştu! Sayfayı yenileyip tekrar deneyin.', waitTime: 3000 });
+        }
+        let discountList = await database.getDiscountsByProductId(removingDiscountProduct.productId);
+        for(let i = 0; i < discountList.length; i++) {
+            const discount = discountList[i];
+            await database.deleteDiscountById(discount.discountId);
+        }
+        res.json({ successMessage: 'Seçilen ürüne yapılmış bütün indirimler silindi!', waitTime: 3000 });
+    } catch (err) {
+        console.log(err);
     }
-    let discountList = await database.getDiscountsByProductId(removingDiscountProduct.productId);
-    for(let i = 0; i < discountList.length; i++) {
-        const discount = discountList[i];
-        await database.deleteDiscountById(discount.discountId);
-    }
-    res.json({ successMessage: 'Seçilen ürüne yapılmış bütün indirimler silindi!', waitTime: 3000 });
 });
 
 router.get('/panel/index', async (req, res) => {
-    if(!req.signedCookies['userId']) {
-        return res.redirect('/');
-    }
-    let userId = parseInt(req.signedCookies['userId']);
-    let user = await database.getUserById(userId);
-    if(user === null) {
-        console.log('kullanıcı bulunamadı!');
-        return res.redirect('/');
-    }
-    if(user.userAdminLevel !== 5) return res.redirect('/');
-    const users = await database.getAllUsers();
-    const usersCount = users.length;
-
-    const products = await database.getAllProducts();
-    const productsCount = products.length;
-
-    let totalSales = 0;
-    let orders = await database.getAllOrders();
-    let confirmOrders = orders.filter(x => x.orderStatus === 1);
-    confirmOrders.forEach(x => {
-        x.orderData = JSON.parse(x.orderData);
-        let total = 0;
-        x.orderData.forEach(j => {
-            total += (j.productAmount * j.productPrice);
+    try {
+        if(!req.signedCookies['userId']) {
+            return res.redirect('/');
+        }
+        let userId = parseInt(req.signedCookies['userId']);
+        let user = await database.getUserById(userId);
+        if(user === null) {
+            console.log('kullanıcı bulunamadı!');
+            return res.redirect('/');
+        }
+        if(user.userAdminLevel !== 5) return res.redirect('/');
+        const users = await database.getAllUsers();
+        const usersCount = users.length;
+    
+        const products = await database.getAllProducts();
+        const productsCount = products.length;
+    
+        let totalSales = 0;
+        let orders = await database.getAllOrders();
+        let confirmOrders = orders.filter(x => x.orderStatus === 1);
+        confirmOrders.forEach(x => {
+            x.orderData = JSON.parse(x.orderData);
+            let total = 0;
+            x.orderData.forEach(j => {
+                total += (j.productAmount * j.productPrice);
+            });
+            totalSales += total;
         });
-        totalSales += total;
-    });
-
-    const waitingOrders = orders.filter(x => x.orderStatus === 0);
-
-    for (let i = 0; i < waitingOrders.length; i++) {
-        let x = waitingOrders[i];
-        let customer = await database.getUserById(x.orderOwner);
-        
-        x.name = customer.userName;
-        x.surName = customer.userSurName;
-        x.nameSurName = `${customer.userName} ${customer.userSurName}`;
-        x.commTitle = customer.userCommercialTitle;
-        x.taxNumber = customer.userTaxNumber;
-        x.adress = customer.userAdress;
-        x.phone = customer.userPhone;
-        x.orderData = JSON.parse(x.orderData);
+    
+        const waitingOrders = orders.filter(x => x.orderStatus === 0);
+    
+        for (let i = 0; i < waitingOrders.length; i++) {
+            let x = waitingOrders[i];
+            let customer = await database.getUserById(x.orderOwner);
+            
+            x.name = customer.userName;
+            x.surName = customer.userSurName;
+            x.nameSurName = `${customer.userName} ${customer.userSurName}`;
+            x.commTitle = customer.userCommercialTitle;
+            x.taxNumber = customer.userTaxNumber;
+            x.adress = customer.userAdress;
+            x.phone = customer.userPhone;
+            x.orderData = JSON.parse(x.orderData);
+        }
+    
+        res.render('panel/index', { userName: user.userName, usersCount: usersCount, productsCount: productsCount, totalSales: totalSales, waitingOrders: waitingOrders });
+    } catch (err) {
+        console.log(err);   
     }
-
-    res.render('panel/index', { userName: user.userName, usersCount: usersCount, productsCount: productsCount, totalSales: totalSales, waitingOrders: waitingOrders });
 });
 router.get('/panel/members-wait', async (req, res) => {
-    if(!req.signedCookies['userId']) {
-        return res.redirect('/');
+    try {
+        if(!req.signedCookies['userId']) {
+            return res.redirect('/');
+        }
+        let userId = parseInt(req.signedCookies['userId']);
+        let user = await database.getUserById(userId);
+        if(user === null) {
+            console.log('kullanıcı bulunamadı!');
+            return res.redirect('/');
+        }
+        if(user.userAdminLevel !== 5) return res.redirect('/');
+    
+        res.render('panel/members-wait', { userName: user.userName });
+    } catch (err) {
+        console.log(err);
     }
-    let userId = parseInt(req.signedCookies['userId']);
-    let user = await database.getUserById(userId);
-    if(user === null) {
-        console.log('kullanıcı bulunamadı!');
-        return res.redirect('/');
-    }
-    if(user.userAdminLevel !== 5) return res.redirect('/');
-
-    res.render('panel/members-wait', { userName: user.userName });
 });
 router.post('/api/confirmuser', async (req, res) => {
-    const { confirmingUsers } = req.body;
-    if(!confirmingUsers) return;
-    for(let i = 0; i < confirmingUsers.length; i++) {
-        let confirmUserId = confirmingUsers[i];
-        await database.confirmUnverifiedUserById(confirmUserId);
+    try {
+        const { confirmingUsers } = req.body;
+        if(!confirmingUsers) return;
+        for(let i = 0; i < confirmingUsers.length; i++) {
+            let confirmUserId = confirmingUsers[i];
+            await database.confirmUnverifiedUserById(confirmUserId);
+        }
+    
+        await loadUnVerifiedUsers(res);
+    } catch (err) {
+        console.log(err);   
     }
-
-    await loadUnVerifiedUsers(res);
 });
 router.post('/api/deleteunverifieduser', async (req, res) => {
-    const { deletingUnVerifUsers } = req.body;
-    if(!deletingUnVerifUsers) return;
-    for(let i = 0; i < deletingUnVerifUsers.length; i++) {
-        let deletingUserId = deletingUnVerifUsers[i];
-        await database.deleteUnverifiedUserById(deletingUserId);
+    try {
+        const { deletingUnVerifUsers } = req.body;
+        if(!deletingUnVerifUsers) return;
+        for(let i = 0; i < deletingUnVerifUsers.length; i++) {
+            let deletingUserId = deletingUnVerifUsers[i];
+            await database.deleteUnverifiedUserById(deletingUserId);
+        }
+    
+        await loadUnVerifiedUsers(res);
+    } catch (err) {
+        console.log(err);
     }
 
-    await loadUnVerifiedUsers(res);
 });
 router.get('/panel/members', async (req, res) => {
-    if(!req.signedCookies['userId']) {
-        return res.redirect('/');
+    try {
+        if(!req.signedCookies['userId']) {
+            return res.redirect('/');
+        }
+        let userId = parseInt(req.signedCookies['userId']);
+        let user = await database.getUserById(userId);
+        if(user === null) {
+            console.log('kullanıcı bulunamadı!');
+            return res.redirect('/');
+        }
+        if(user.userAdminLevel !== 5) return res.redirect('/');
+    
+        res.render('panel/members', { userName: user.userName });
+    } catch (err) {
+        console.log(err);   
     }
-    let userId = parseInt(req.signedCookies['userId']);
-    let user = await database.getUserById(userId);
-    if(user === null) {
-        console.log('kullanıcı bulunamadı!');
-        return res.redirect('/');
-    }
-    if(user.userAdminLevel !== 5) return res.redirect('/');
-
-    res.render('panel/members', { userName: user.userName });
 });
 
 router.post('/api/banusers', async (req, res) => {
-    const { banningUsers } = req.body;
-    if(!banningUsers) return;
-    
-    for(let i = 0; i < banningUsers.length; i++) {
-        let user = await database.getUserById(banningUsers[i]);
-        user.isBanned = !user.isBanned;
-        await database.updateUserById(user.userId, user);
+    try {
+        const { banningUsers } = req.body;
+        if(!banningUsers) return;
+        
+        for(let i = 0; i < banningUsers.length; i++) {
+            let user = await database.getUserById(banningUsers[i]);
+            user.isBanned = !user.isBanned;
+            await database.updateUserById(user.userId, user);
+        }
+        
+        await loadVerifiedUsers(res);
+    } catch (err) {
+        console.log(err);
     }
-    
-    await loadVerifiedUsers(res);
 });
 
 router.post('/api/deleteusers', async (req, res) => {
-    const { deletingUsers } = req.body;
-    if(!deletingUsers) return;
+    try {
+        const { deletingUsers } = req.body;
+        if(!deletingUsers) return;
+        
+        for(let i = 0; i < deletingUsers.length; i++) {
+            await database.deleteUserById(deletingUsers[i]);
+        }
     
-    for(let i = 0; i < deletingUsers.length; i++) {
-        await database.deleteUserById(deletingUsers[i]);
+        await loadVerifiedUsers(res);
+    } catch (err) {
+        console.log(err);
     }
-
-    await loadVerifiedUsers(res);
 });
 
 router.post('/api/edituser', async (req, res) => {
-    const { editingUser, editingUserId } = req.body;
-    if(!editingUser || !editingUserId) return;
-    //console.log('editing user id: %d' ,editingUserId);
-
-    let user = await database.getUserById(editingUserId);
-    if(user == null) {
-        console.log('silinmek istenen kullanıcı bulunamadı!');
-        return;
+    try {
+        const { editingUser, editingUserId } = req.body;
+        if(!editingUser || !editingUserId) return;
+        //console.log('editing user id: %d' ,editingUserId);
+    
+        let user = await database.getUserById(editingUserId);
+        if(user == null) {
+            console.log('silinmek istenen kullanıcı bulunamadı!');
+            return;
+        }
+    
+        let parts = editingUser.nameSurName.split(' ');
+        let surname = parts.pop(); // Dizinin son elemanını alıp çıkarıyoruz, bu soyad olacak
+        let name = parts.join(' '); // Geriye kalan kısmı birleştiriyoruz, bu da isim olacak
+    
+        user.userName = name;
+        user.userSurName = surname;
+        user.userCommercialTitle = editingUser.commTitle;
+        user.taxNumber = editingUser.taxNo;
+        user.userAdress = editingUser.adress;
+        user.userPhone = editingUser.phone;
+        user.userMail = editingUser.mail;
+    
+        await database.updateUserById(editingUserId, user);
+        if(editingUser.password !== '') {
+            await database.updateUserPassword(editingUserId, editingUser.password);
+        }
+        await loadVerifiedUsers(res);
+    } catch (err) {
+        console.log(err);   
     }
-
-    let parts = editingUser.nameSurName.split(' ');
-    let surname = parts.pop(); // Dizinin son elemanını alıp çıkarıyoruz, bu soyad olacak
-    let name = parts.join(' '); // Geriye kalan kısmı birleştiriyoruz, bu da isim olacak
-
-    user.userName = name;
-    user.userSurName = surname;
-    user.userCommercialTitle = editingUser.commTitle;
-    user.taxNumber = editingUser.taxNo;
-    user.userAdress = editingUser.adress;
-    user.userPhone = editingUser.phone;
-    user.userMail = editingUser.mail;
-
-    await database.updateUserById(editingUserId, user);
-    if(editingUser.password !== '') {
-        await database.updateUserPassword(editingUserId, editingUser.password);
-    }
-    await loadVerifiedUsers(res);
 });
 
 router.post('/api/createuser', async (req, res) => {
-    const { creatingUser } = req.body;
-    if(!creatingUser) return;
+    try {
+        const { creatingUser } = req.body;
+        if(!creatingUser) return;
+        
+        let parts = creatingUser.nameSurName.split(' ');
+        let surname = parts.pop(); // Dizinin son elemanını alıp çıkarıyoruz, bu soyad olacak
+        let name = parts.join(' '); // Geriye kalan kısmı birleştiriyoruz, bu da isim olacak
     
-    let parts = creatingUser.nameSurName.split(' ');
-    let surname = parts.pop(); // Dizinin son elemanını alıp çıkarıyoruz, bu soyad olacak
-    let name = parts.join(' '); // Geriye kalan kısmı birleştiriyoruz, bu da isim olacak
-
-    await database.createUser(name, surname, creatingUser.commTitle, creatingUser.adress, creatingUser.mail, creatingUser.password, creatingUser.taxNo, creatingUser.phone, new Date());
-    await loadVerifiedUsers(res);
+        await database.createUser(name, surname, creatingUser.commTitle, creatingUser.adress, creatingUser.mail, creatingUser.password, creatingUser.taxNo, creatingUser.phone, new Date());
+        await loadVerifiedUsers(res);   
+    } catch (err) {
+        console.log(err);
+    }
 });
 
 router.get('/api/loadpanelusers', async (req, res) => {
-    await loadVerifiedUsers(res);
+    try {
+        await loadVerifiedUsers(res);
+    } catch (err) {
+        console.log(err);
+    }
 });
 
 async function loadVerifiedUsers(res) {
-    let userList = await database.getAllUsers();
-    let safeUserList = [];
-
-    for(var i = 0; i < userList.length; i++) {
-        let newUser = {
-            userId: userList[i].userId,
-            userNameSurName: userList[i].userName + ' ' + userList[i].userSurName,
-            //userSurName: userList[i].userSurName,
-            userCommercialTitle: userList[i].userCommercialTitle,
-            userAdress: userList[i].userAdress,
-            userMail: userList[i].userMail,
-            userTaxNumber: userList[i].userTaxNumber,
-            userPhone: userList[i].userPhone,
-            userRegisteredDate: userList[i].userRegisteredDate,
-            isChecked: false,
-            isBanned: userList[i].isBanned   
+    try {
+        let userList = await database.getAllUsers();
+        let safeUserList = [];
+    
+        for(var i = 0; i < userList.length; i++) {
+            let newUser = {
+                userId: userList[i].userId,
+                userNameSurName: userList[i].userName + ' ' + userList[i].userSurName,
+                //userSurName: userList[i].userSurName,
+                userCommercialTitle: userList[i].userCommercialTitle,
+                userAdress: userList[i].userAdress,
+                userMail: userList[i].userMail,
+                userTaxNumber: userList[i].userTaxNumber,
+                userPhone: userList[i].userPhone,
+                userRegisteredDate: userList[i].userRegisteredDate,
+                isChecked: false,
+                isBanned: userList[i].isBanned   
+            }
+            safeUserList.push(newUser);
         }
-        safeUserList.push(newUser);
+    
+        return res.json({success: true, userList: safeUserList});   
+    } catch (err) {
+        console.log(err);
+        return null;
     }
-
-    return res.json({success: true, userList: safeUserList});
 }
 
 router.get('/api/loadunverifiedusers', async (req, res) => {
-    await loadUnVerifiedUsers(res);
+    try {
+        await loadUnVerifiedUsers(res);
+    } catch (err) {
+        console.log(err);
+    }
 });
 
 async function loadUnVerifiedUsers(res) {
-    let unverifiedUsers = await database.getAllUnverifiedUsers();
-    let safeUserList = [];
-
-    for(var i = 0; i < unverifiedUsers.length; i++) {
-        let newUser = {
-            userId: unverifiedUsers[i].userId,
-            userNameSurName: unverifiedUsers[i].userName + ' ' + unverifiedUsers[i].userSurName,
-            //userSurName: userList[i].userSurName,
-            userCommercialTitle: unverifiedUsers[i].userCommercialTitle,
-            userAdress: unverifiedUsers[i].userAdress,
-            userMail: unverifiedUsers[i].userMail,
-            userTaxNumber: unverifiedUsers[i].userTaxNumber,
-            userPhone: unverifiedUsers[i].userPhone,
-            userRegisteredDate: unverifiedUsers[i].userRegisteredDate,
-            isChecked: false,
+    try {
+        let unverifiedUsers = await database.getAllUnverifiedUsers();
+        let safeUserList = [];
+    
+        for(var i = 0; i < unverifiedUsers.length; i++) {
+            let newUser = {
+                userId: unverifiedUsers[i].userId,
+                userNameSurName: unverifiedUsers[i].userName + ' ' + unverifiedUsers[i].userSurName,
+                //userSurName: userList[i].userSurName,
+                userCommercialTitle: unverifiedUsers[i].userCommercialTitle,
+                userAdress: unverifiedUsers[i].userAdress,
+                userMail: unverifiedUsers[i].userMail,
+                userTaxNumber: unverifiedUsers[i].userTaxNumber,
+                userPhone: unverifiedUsers[i].userPhone,
+                userRegisteredDate: unverifiedUsers[i].userRegisteredDate,
+                isChecked: false,
+            }
+            safeUserList.push(newUser);
         }
-        safeUserList.push(newUser);
-    }
 
-    return res.json({success: true, unverifiedUserList: safeUserList});
+        return res.json({success: true, unverifiedUserList: safeUserList});
+
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
 }
 
 router.get('/panel/order-details', async (req, res) => {
-    if(!req.signedCookies['userId']) {
-        return res.redirect('/');
+    try {
+        if(!req.signedCookies['userId']) {
+            return res.redirect('/');
+        }
+        let userId = parseInt(req.signedCookies['userId']);
+        let user = await database.getUserById(userId);
+        if(user === null) {
+            console.log('kullanıcı bulunamadı!');
+            return res.redirect('/');
+        }
+        if(user.userAdminLevel !== 5) return res.redirect('/');
+    
+        const { orderId, isCurrentAcc } = req.query;
+        if(orderId === undefined) {
+            return res.redirect('/');
+        }
+        let order = await database.getOrderById(parseInt(orderId));
+        if(order === null) {
+            return res.redirect('/');
+        }
+        let customer = await database.getUserById(order.orderOwner);
+        if(customer === null) {
+            return res.redirect('/');
+        }
+    
+        order.name = customer.userName;
+        order.surName = customer.userSurName;
+        order.nameSurName = `${customer.userName} ${customer.userSurName}`;
+        order.commTitle = customer.userCommercialTitle;
+        order.taxNumber = customer.userTaxNumber;
+        order.adress = customer.userAdress;
+        order.phone = customer.userPhone;
+        order.mail = customer.userMail;
+        order.orderData = JSON.parse(order.orderData);
+    
+        res.render('panel/order-details', { userName: user.userName, order: order, isCurrentAcc: isCurrentAcc });   
+    } catch (err) {
+        console.log(err);
     }
-    let userId = parseInt(req.signedCookies['userId']);
-    let user = await database.getUserById(userId);
-    if(user === null) {
-        console.log('kullanıcı bulunamadı!');
-        return res.redirect('/');
-    }
-    if(user.userAdminLevel !== 5) return res.redirect('/');
-
-    const { orderId, isCurrentAcc } = req.query;
-    if(orderId === undefined) {
-        return res.redirect('/');
-    }
-    let order = await database.getOrderById(parseInt(orderId));
-    if(order === null) {
-        return res.redirect('/');
-    }
-    let customer = await database.getUserById(order.orderOwner);
-    if(customer === null) {
-        return res.redirect('/');
-    }
-
-    order.name = customer.userName;
-    order.surName = customer.userSurName;
-    order.nameSurName = `${customer.userName} ${customer.userSurName}`;
-    order.commTitle = customer.userCommercialTitle;
-    order.taxNumber = customer.userTaxNumber;
-    order.adress = customer.userAdress;
-    order.phone = customer.userPhone;
-    order.mail = customer.userMail;
-    order.orderData = JSON.parse(order.orderData);
-
-    res.render('panel/order-details', { userName: user.userName, order: order, isCurrentAcc: isCurrentAcc });
 });
-router.get('/panel/order-history-v2', async (req, res) => {
-    if(!req.signedCookies['userId']) {
-        return res.redirect('/');
-    }
-    let userId = parseInt(req.signedCookies['userId']);
-    let user = await database.getUserById(userId);
-    if(user === null) {
-        console.log('kullanıcı bulunamadı!');
-        return res.redirect('/');
-    }
-    if(user.userAdminLevel !== 5) return res.redirect('/');
 
-    res.render('panel/order-history-v2', { userName: user.userName });
+router.get('/panel/order-history-v2', async (req, res) => {
+    try {
+        if(!req.signedCookies['userId']) {
+            return res.redirect('/');
+        }
+        let userId = parseInt(req.signedCookies['userId']);
+        let user = await database.getUserById(userId);
+        if(user === null) {
+            console.log('kullanıcı bulunamadı!');
+            return res.redirect('/');
+        }
+        if(user.userAdminLevel !== 5) return res.redirect('/');
+    
+        res.render('panel/order-history-v2', { userName: user.userName });
+    } catch (err) {
+        console.log(err);
+    }
 });
 router.get('/panel/order-history', async (req, res) => {
-    if(!req.signedCookies['userId']) {
-        return res.redirect('/');
-    }
-    let userId = parseInt(req.signedCookies['userId']);
-    let user = await database.getUserById(userId);
-    if(user === null) {
-        console.log('kullanıcı bulunamadı!');
-        return res.redirect('/');
-    }
-    if(user.userAdminLevel !== 5) return res.redirect('/');
+    try {
+        if(!req.signedCookies['userId']) {
+            return res.redirect('/');
+        }
+        let userId = parseInt(req.signedCookies['userId']);
+        let user = await database.getUserById(userId);
+        if(user === null) {
+            console.log('kullanıcı bulunamadı!');
+            return res.redirect('/');
+        }
+        if(user.userAdminLevel !== 5) return res.redirect('/');
+    
+        res.render('panel/order-history', { userName: user.userName });
 
-    res.render('panel/order-history', { userName: user.userName });
+    } catch (err) {
+        console.log(err);
+    }
 });
+
 router.get('/panel/order-status', async (req, res) => {
-    if(!req.signedCookies['userId']) {
-        return res.redirect('/');
+    try {
+        if(!req.signedCookies['userId']) {
+            return res.redirect('/');
+        }
+        let userId = parseInt(req.signedCookies['userId']);
+        let user = await database.getUserById(userId);
+        if(user === null) {
+            console.log('kullanıcı bulunamadı!');
+            return res.redirect('/');
+        }
+        if(user.userAdminLevel !== 5) return res.redirect('/');
+    
+        const { orderId } = req.query;
+        if(orderId === undefined) {
+            return res.redirect('orders-total');
+        }
+    
+        let order = await database.getOrderById(parseInt(orderId));
+        if(order === null) {
+            return res.redirect('orders-total');
+        }
+    
+        const orderData = {
+            orderId: orderId,
+            createdDate: order.orderCreatedDate,
+            time: order.orderCreatedTime,
+            state: order.orderStatus.toString(),
+        }
+    
+        res.render('panel/order-status', { userName: user.userName, orderData: orderData });
+    } catch (err) {
+        console.log(err);
     }
-    let userId = parseInt(req.signedCookies['userId']);
-    let user = await database.getUserById(userId);
-    if(user === null) {
-        console.log('kullanıcı bulunamadı!');
-        return res.redirect('/');
-    }
-    if(user.userAdminLevel !== 5) return res.redirect('/');
-
-    const { orderId } = req.query;
-    if(orderId === undefined) {
-        return res.redirect('orders-total');
-    }
-
-    let order = await database.getOrderById(parseInt(orderId));
-    if(order === null) {
-        return res.redirect('orders-total');
-    }
-
-    const orderData = {
-        orderId: orderId,
-        createdDate: order.orderCreatedDate,
-        time: order.orderCreatedTime,
-        state: order.orderStatus.toString(),
-    }
-
-    res.render('panel/order-status', { userName: user.userName, orderData: orderData });
 });
 
 router.post('/api/confirmorder', async (req, res) => {
-    const { confirmOrderData } = req.body;
-    if(confirmOrderData === undefined) return res.json({ success: true, redirectPage: '/'});
+    try {
+        const { confirmOrderData } = req.body;
+        if(confirmOrderData === undefined) return res.json({ success: true, redirectPage: '/'});
     
-    let order = await database.getOrderById(confirmOrderData.orderId);
-    if(order == null) {
-        return res.json({ success: true, redirectPage: '/'});
-    }
-    let user = await database.getUserById(order.orderOwner);
-    if(user === null) return res.json({ success: true, redirectPage: '/'});
-    order.orderStatus = confirmOrderData.newStatus;
-    await database.updateOrderById(order.orderId, order);
+        let order = await database.getOrderById(confirmOrderData.orderId);
+        if(order == null) {
+            return res.json({ success: true, redirectPage: '/'});
+        }
+        let user = await database.getUserById(order.orderOwner);
+        if(user === null) return res.json({ success: true, redirectPage: '/'});
+        order.orderStatus = confirmOrderData.newStatus;
+        await database.updateOrderById(order.orderId, order);
 
-    if(confirmOrderData.reportCustomer === true) {
+        if(confirmOrderData.reportCustomer === true) {
         
-        if(order.orderStatus === 0) { // 
-            let content = mailAPI.orderWaitingHTML(order.orderId, confirmOrderData.note);
-            mailAPI.sendEmail(user.userMail, 'Sipariş Bekliyor', content);
+            if(order.orderStatus === 0) { // 
+                let content = mailAPI.orderWaitingHTML(order.orderId, confirmOrderData.note);
+                mailAPI.sendEmail(user.userMail, 'Sipariş Bekliyor', content);
+            }
+            if(order.orderStatus === 1) { // onaylanırsa
+                let content = mailAPI.orderConfirmHTML(order.orderId, confirmOrderData.note);
+                mailAPI.sendEmail(user.userMail, 'Sipariş Onaylandı', content);
+            }
+            else if(order.orderStatus === 2) { // iptal edilirse
+                let content = mailAPI.orderCancelHTML(order.orderId, confirmOrderData.note);
+                mailAPI.sendEmail(user.userMail, 'Sipariş İptal Edildi', content);
+            }
         }
-        if(order.orderStatus === 1) { // onaylanırsa
-            let content = mailAPI.orderConfirmHTML(order.orderId, confirmOrderData.note);
-            mailAPI.sendEmail(user.userMail, 'Sipariş Onaylandı', content);
-        }
-        else if(order.orderStatus === 2) { // iptal edilirse
-            let content = mailAPI.orderCancelHTML(order.orderId, confirmOrderData.note);
-            mailAPI.sendEmail(user.userMail, 'Sipariş İptal Edildi', content);
-        }
-    }
 
-    setTimeout(() => {
-        res.json({ success: true, redirectPage: 'orders-total' });
-    }, 1500);
+        setTimeout(() => {
+            res.json({ success: true, redirectPage: 'orders-total' });
+        }, 1500);
+    } catch (err) {
+        console.log(err);
+    }
 });
 
 router.get('/panel/orders-confirm', async (req, res) => {
-    if(!req.signedCookies['userId']) {
-        return res.redirect('/');
+    try {
+        if(!req.signedCookies['userId']) {
+            return res.redirect('/');
+        }
+        let userId = parseInt(req.signedCookies['userId']);
+        let user = await database.getUserById(userId);
+        if(user === null) {
+            console.log('kullanıcı bulunamadı!');
+            return res.redirect('/');
+        }
+        if(user.userAdminLevel !== 5) return res.redirect('/');
+    
+        let orders = await database.getAllOrders();
+        const confirmOrders = orders.filter(x => x.orderStatus === 1);
+    
+        for (let i = 0; i < confirmOrders.length; i++) {
+            let x = confirmOrders[i];
+            let customer = await database.getUserById(x.orderOwner);
+            
+            x.name = customer.userName;
+            x.surName = customer.userSurName;
+            x.nameSurName = `${customer.userName} ${customer.userSurName}`;
+            x.commTitle = customer.userCommercialTitle;
+            x.taxNumber = customer.userTaxNumber;
+            x.adress = customer.userAdress;
+            x.phone = customer.userPhone;
+            x.orderData = JSON.parse(x.orderData);
+        }
+    
+        res.render('panel/orders-confirm', { userName: user.userName, confirmOrders: confirmOrders });
+    } catch (err) {
+        console.log(err);   
     }
-    let userId = parseInt(req.signedCookies['userId']);
-    let user = await database.getUserById(userId);
-    if(user === null) {
-        console.log('kullanıcı bulunamadı!');
-        return res.redirect('/');
-    }
-    if(user.userAdminLevel !== 5) return res.redirect('/');
-
-    let orders = await database.getAllOrders();
-    const confirmOrders = orders.filter(x => x.orderStatus === 1);
-
-    for (let i = 0; i < confirmOrders.length; i++) {
-        let x = confirmOrders[i];
-        let customer = await database.getUserById(x.orderOwner);
-        
-        x.name = customer.userName;
-        x.surName = customer.userSurName;
-        x.nameSurName = `${customer.userName} ${customer.userSurName}`;
-        x.commTitle = customer.userCommercialTitle;
-        x.taxNumber = customer.userTaxNumber;
-        x.adress = customer.userAdress;
-        x.phone = customer.userPhone;
-        x.orderData = JSON.parse(x.orderData);
-    }
-
-    res.render('panel/orders-confirm', { userName: user.userName, confirmOrders: confirmOrders });
 });
 router.get('/panel/orders-total', async (req, res) => {
-    if(!req.signedCookies['userId']) {
-        return res.redirect('/');
+    try {
+        if(!req.signedCookies['userId']) {
+            return res.redirect('/');
+        }
+        let userId = parseInt(req.signedCookies['userId']);
+        let user = await database.getUserById(userId);
+        if(user === null) {
+            console.log('kullanıcı bulunamadı!');
+            return res.redirect('/');
+        }
+        if(user.userAdminLevel !== 5) return res.redirect('/');
+    
+        const orders = await database.getAllOrders();
+        for (let i = 0; i < orders.length; i++) {
+            let x = orders[i];
+            let customer = await database.getUserById(x.orderOwner);
+            
+            x.name = customer.userName;
+            x.surName = customer.userSurName;
+            x.nameSurName = `${customer.userName} ${customer.userSurName}`;
+            x.commTitle = customer.userCommercialTitle;
+            x.taxNumber = customer.userTaxNumber;
+            x.adress = customer.userAdress;
+            x.phone = customer.userPhone;
+            x.orderData = JSON.parse(x.orderData);
+        }
+    
+        res.render('panel/orders-total', { userName: user.userName, orders: orders });
+    } catch (err) {
+        console.log(err);   
     }
-    let userId = parseInt(req.signedCookies['userId']);
-    let user = await database.getUserById(userId);
-    if(user === null) {
-        console.log('kullanıcı bulunamadı!');
-        return res.redirect('/');
-    }
-    if(user.userAdminLevel !== 5) return res.redirect('/');
-
-    const orders = await database.getAllOrders();
-    for (let i = 0; i < orders.length; i++) {
-        let x = orders[i];
-        let customer = await database.getUserById(x.orderOwner);
-        
-        x.name = customer.userName;
-        x.surName = customer.userSurName;
-        x.nameSurName = `${customer.userName} ${customer.userSurName}`;
-        x.commTitle = customer.userCommercialTitle;
-        x.taxNumber = customer.userTaxNumber;
-        x.adress = customer.userAdress;
-        x.phone = customer.userPhone;
-        x.orderData = JSON.parse(x.orderData);
-    }
-
-    res.render('panel/orders-total', { userName: user.userName, orders: orders });
 });
 router.get('/panel/orders-wait', async (req, res) => {
-    if(!req.signedCookies['userId']) {
-        return res.redirect('/');
+    try {
+        if(!req.signedCookies['userId']) {
+            return res.redirect('/');
+        }
+        let userId = parseInt(req.signedCookies['userId']);
+        let user = await database.getUserById(userId);
+        if(user === null) {
+            console.log('kullanıcı bulunamadı!');
+            return res.redirect('/');
+        }
+        if(user.userAdminLevel !== 5) return res.redirect('/');
+    
+        let orders = await database.getAllOrders();
+        const waitingOrders = orders.filter(x => x.orderStatus === 0);
+    
+        for (let i = 0; i < waitingOrders.length; i++) {
+            let x = waitingOrders[i];
+            let customer = await database.getUserById(x.orderOwner);
+            
+            x.name = customer.userName;
+            x.surName = customer.userSurName;
+            x.nameSurName = `${customer.userName} ${customer.userSurName}`;
+            x.commTitle = customer.userCommercialTitle;
+            x.taxNumber = customer.userTaxNumber;
+            x.adress = customer.userAdress;
+            x.phone = customer.userPhone;
+            x.orderData = JSON.parse(x.orderData);
+        }
+    
+        //console.log(waitingOrders);
+        res.render('panel/orders-wait', { userName: user.userName, waitingOrders: waitingOrders });
+    } catch (err) {
+        console.log(err);
     }
-    let userId = parseInt(req.signedCookies['userId']);
-    let user = await database.getUserById(userId);
-    if(user === null) {
-        console.log('kullanıcı bulunamadı!');
-        return res.redirect('/');
-    }
-    if(user.userAdminLevel !== 5) return res.redirect('/');
-
-    let orders = await database.getAllOrders();
-    const waitingOrders = orders.filter(x => x.orderStatus === 0);
-
-    for (let i = 0; i < waitingOrders.length; i++) {
-        let x = waitingOrders[i];
-        let customer = await database.getUserById(x.orderOwner);
-        
-        x.name = customer.userName;
-        x.surName = customer.userSurName;
-        x.nameSurName = `${customer.userName} ${customer.userSurName}`;
-        x.commTitle = customer.userCommercialTitle;
-        x.taxNumber = customer.userTaxNumber;
-        x.adress = customer.userAdress;
-        x.phone = customer.userPhone;
-        x.orderData = JSON.parse(x.orderData);
-    }
-
-    console.log(waitingOrders);
-    res.render('panel/orders-wait', { userName: user.userName, waitingOrders: waitingOrders });
 });
 router.get('/panel/product-archive', async (req, res) => {
-    if(!req.signedCookies['userId']) {
-        return res.redirect('/');
+    try {
+        if(!req.signedCookies['userId']) {
+            return res.redirect('/');
+        }
+        let userId = parseInt(req.signedCookies['userId']);
+        let user = await database.getUserById(userId);
+        if(user === null) {
+            console.log('kullanıcı bulunamadı!');
+            return res.redirect('/');
+        }
+        if(user.userAdminLevel !== 5) return res.redirect('/');
+    
+        res.render('panel/product-archive', { userName: user.userName });
+    } catch (err) {
+        console.log(err);
     }
-    let userId = parseInt(req.signedCookies['userId']);
-    let user = await database.getUserById(userId);
-    if(user === null) {
-        console.log('kullanıcı bulunamadı!');
-        return res.redirect('/');
-    }
-    if(user.userAdminLevel !== 5) return res.redirect('/');
-
-    res.render('panel/product-archive', { userName: user.userName });
 });
 router.get('/panel/product-confirm', async (req, res) => {
-    if(!req.signedCookies['userId']) {
-        return res.redirect('/');
+    try {
+        if(!req.signedCookies['userId']) {
+            return res.redirect('/');
+        }
+        let userId = parseInt(req.signedCookies['userId']);
+        let user = await database.getUserById(userId);
+        if(user === null) {
+            console.log('kullanıcı bulunamadı!');
+            return res.redirect('/');
+        }
+        if(user.userAdminLevel !== 5) return res.redirect('/');
+    
+        res.render('panel/product-confirm', { userName: user.userName });
+    } catch (err) {
+        console.log(err);
     }
-    let userId = parseInt(req.signedCookies['userId']);
-    let user = await database.getUserById(userId);
-    if(user === null) {
-        console.log('kullanıcı bulunamadı!');
-        return res.redirect('/');
-    }
-    if(user.userAdminLevel !== 5) return res.redirect('/');
-
-    res.render('panel/product-confirm', { userName: user.userName });
 });
+
 router.get('/panel/products', async (req, res) => {
-    if(!req.signedCookies['userId']) {
-        return res.redirect('/');
+    try {
+        if(!req.signedCookies['userId']) {
+            return res.redirect('/');
+        }
+        let userId = parseInt(req.signedCookies['userId']);
+        let user = await database.getUserById(userId);
+        if(user === null) {
+            console.log('kullanıcı bulunamadı!');
+            return res.redirect('/');
+        }
+        if(user.userAdminLevel !== 5) return res.redirect('/');
+    
+        /*
+        let categories = await database.getCategories();
+        console.log(categories.length);
+        for(let i = 0; i < categories.length; i++) {
+            console.log(categories[i]);
+        }
+        */
+    
+        res.render('panel/products', { userName: user.userName });
+    } catch (err) {
+        console.log(err);
     }
-    let userId = parseInt(req.signedCookies['userId']);
-    let user = await database.getUserById(userId);
-    if(user === null) {
-        console.log('kullanıcı bulunamadı!');
-        return res.redirect('/');
-    }
-    if(user.userAdminLevel !== 5) return res.redirect('/');
-
-    /*
-    let categories = await database.getCategories();
-    console.log(categories.length);
-    for(let i = 0; i < categories.length; i++) {
-        console.log(categories[i]);
-    }
-    */
-
-    res.render('panel/products', { userName: user.userName });
 });
 
 router.get('/api/loadpanelcategories', async (req, res) => {
-    let categories = await database.getCategories();
-    let subcategories = await database.getSubCategories();
-    res.json({ categories: categories, subcategories: subcategories });
+    try {
+        let categories = await database.getCategories();
+        let subcategories = await database.getSubCategories();
+        res.json({ categories: categories, subcategories: subcategories });   
+    } catch (err) {
+        console.log(err);
+    }
 });
 
 router.get('/api/loadpanelproducts', async (req, res) => {
-    let products = await database.getAllProducts();
-    products.forEach(x => {
-        x.selected = false;
-    });
-
-    //console.log(products);
-    res.json({ products: products });
+    try {
+        let products = await database.getAllProducts();
+        products.forEach(x => {
+            x.selected = false;
+        });
+    
+        //console.log(products);
+        res.json({ products: products });
+    } catch (err) {
+        console.log(err);
+    }
 });
 
 router.get('/api/loadarchiveproducts', async (req, res) => {
-    let archiveProducts = await database.getArchiveProducts();
-    let categories = await database.getCategories();
-    let subCategories = await database.getSubCategories();
+    try {
+        let archiveProducts = await database.getArchiveProducts();
+        let categories = await database.getCategories();
+        let subCategories = await database.getSubCategories();
+        
+        archiveProducts.forEach(x => {
+            x.selected = false;
+        });
     
-    archiveProducts.forEach(x => {
-        x.selected = false;
-    });
-
-    res.json({ archiveProducts: archiveProducts, categories: categories, subCategories: subCategories });
+        res.json({ archiveProducts: archiveProducts, categories: categories, subCategories: subCategories });
+    } catch (err) {
+        console.log(err);
+    }
 });
 
 // Multer API
@@ -1360,221 +1499,278 @@ router.post('/upload', upload.single('file'), async (req, res) => {
 });
 
 router.post('/api/updateproduct', async (req, res) => {
-    const { pData, pId } = req.body;
+    try {
+        const { pData, pId } = req.body;
 
-    let updatingProduct = await database.getProductById(pId);
-    if(updatingProduct === null) {
-        console.log('ürün bulunamadı!');
-        return;
+        let updatingProduct = await database.getProductById(pId);
+        if(updatingProduct === null) {
+            console.log('ürün bulunamadı!');
+            return;
+        }
+
+        updatingProduct.productName = pData.productName;
+        updatingProduct.productCategory = pData.selectedCategoryId;
+        updatingProduct.productSubCategory = pData.selectedSubCategoryId;
+        updatingProduct.productDescription = pData.productDesc;
+        updatingProduct.productCode = pData.productCode;
+        updatingProduct.productAmount = pData.productAmount;
+        updatingProduct.productModel = pData.productModel;
+        updatingProduct.productLength = pData.productLength;
+        updatingProduct.productWidth = pData.productWidth;
+        updatingProduct.productThickness = pData.productThickness;
+        updatingProduct.productMaxStock = pData.productMaxStock;
+        updatingProduct.productPrice = pData.productPrice;
+        updatingProduct.productDiscountedPrice = pData.productDiscountedPrice;
+        await database.updateProductById(pId, updatingProduct);
+        res.json({ success: true });
+
+    } catch (err) {
+        console.log(err);   
     }
-
-    updatingProduct.productName = pData.productName;
-    updatingProduct.productCategory = pData.selectedCategoryId;
-    updatingProduct.productSubCategory = pData.selectedSubCategoryId;
-    updatingProduct.productDescription = pData.productDesc;
-    updatingProduct.productCode = pData.productCode;
-    updatingProduct.productAmount = pData.productAmount;
-    updatingProduct.productModel = pData.productModel;
-    updatingProduct.productLength = pData.productLength;
-    updatingProduct.productWidth = pData.productWidth;
-    updatingProduct.productThickness = pData.productThickness;
-    updatingProduct.productMaxStock = pData.productMaxStock;
-    updatingProduct.productPrice = pData.productPrice;
-    updatingProduct.productDiscountedPrice = pData.productDiscountedPrice;
-    await database.updateProductById(pId, updatingProduct);
-    res.json({ success: true });
 });
 
 router.post('/api/deleteproducts', async (req, res) => {
-    const { deletingProducts } = req.body;
-    console.log('silinmek istenen ürünler: ' + deletingProducts);
-    for(let i = 0; i < deletingProducts.length; i++) {
-        let deletingProductId = deletingProducts[i];
-        await database.deleteProductById(deletingProductId);
-    }
+    try {
+        const { deletingProducts } = req.body;
+        console.log('silinmek istenen ürünler: ' + deletingProducts);
+        for(let i = 0; i < deletingProducts.length; i++) {
+            let deletingProductId = deletingProducts[i];
+            await database.deleteProductById(deletingProductId);
+        }
+    
+        res.json({ success: true });
 
-    res.json({ success: true });
+    } catch (err) {
+        console.log(err);
+    }
 });
 
 router.post('/api/archiveproducts', async (req, res) => {
-    const { archiveProducts } = req.body;
-    for(let i = 0; i < archiveProducts.length; i++) {
-        let archiveProductId = archiveProducts[i];
-        let product = await database.getProductById(archiveProductId);
-        product.productState = !product.productState;
-        await database.updateProductById(archiveProductId, product);
+    try {
+        const { archiveProducts } = req.body;
+        for(let i = 0; i < archiveProducts.length; i++) {
+            let archiveProductId = archiveProducts[i];
+            let product = await database.getProductById(archiveProductId);
+            product.productState = !product.productState;
+            await database.updateProductById(archiveProductId, product);
+        }
+        res.json({ success: true });
+
+    } catch (err) {
+        console.log(err);
     }
-    res.json({ success: true });
 });
 
 router.post('/api/publishproducts', async (req, res) => {
-    const { publishingArchiveProducts } = req.body;
-    if(!publishingArchiveProducts) return;
-    for (let i = 0; i < publishingArchiveProducts.length; i++) {
-        const archiveProductId = publishingArchiveProducts[i];
-        let product = await database.getProductById(archiveProductId);
-        product.productState = true;
-        await database.updateProductById(archiveProductId, product);
+    try {
+        const { publishingArchiveProducts } = req.body;
+        if(!publishingArchiveProducts) return;
+        for (let i = 0; i < publishingArchiveProducts.length; i++) {
+            const archiveProductId = publishingArchiveProducts[i];
+            let product = await database.getProductById(archiveProductId);
+            product.productState = true;
+            await database.updateProductById(archiveProductId, product);
+        }
+        res.json({ success: true });
+    } catch (err) {
+        console.log(err);
     }
-    res.json({ success: true });
 });
 
 
 
 router.get('/order-history', async (req, res) => {
-    const isLogged = req.signedCookies['userId'];
-    if(!isLogged) return res.redirect('/');
-    let isAdmin = await checkIsAdmin(req);
-    const userId = req.signedCookies['userId'];
-    if(!userId) res.redirect('/');
-
-    const userOrders = await database.getUserOrders(userId);
-    let user = await database.getUserById(userId);
-    if(user === null) {
-        return res.redirect('/');
+    try {
+        const isLogged = req.signedCookies['userId'];
+        if(!isLogged) return res.redirect('/');
+        let isAdmin = await checkIsAdmin(req);
+        const userId = req.signedCookies['userId'];
+        if(!userId) res.redirect('/');
+    
+        const userOrders = await database.getUserOrders(userId);
+        let user = await database.getUserById(userId);
+        if(user === null) {
+            return res.redirect('/');
+        }
+        //console.log(userOrders);
+        let waitingOrders = userOrders.filter(x => x.orderStatus === 0);
+        waitingOrders.forEach(x => {
+            x.name = user.userName;
+            x.surName = user.userSurName;
+            x.commTitle = user.userCommercialTitle;
+            x.taxNumber = user.userTaxNumber;
+            x.adress = user.userAdress;
+            x.phone = user.userPhone;
+            x.orderData = JSON.parse(x.orderData);
+        });
+    
+        let completedOrders = userOrders.filter(x => x.orderStatus === 1);
+        completedOrders.forEach(x => {
+            x.name = user.userName;
+            x.surName = user.userSurName;
+            x.commTitle = user.userCommercialTitle;
+            x.taxNumber = user.userTaxNumber;
+            x.adress = user.userAdress;
+            x.phone = user.userPhone;
+            x.orderData = JSON.parse(x.orderData);
+        });
+    
+        let canceledOrders = userOrders.filter(x => x.orderStatus === 2);
+        canceledOrders.forEach(x => {
+            x.name = user.userName;
+            x.surName = user.userSurName;
+            x.commTitle = user.userCommercialTitle;
+            x.taxNumber = user.userTaxNumber;
+            x.adress = user.userAdress;
+            x.phone = user.userPhone;
+            x.orderData = JSON.parse(x.orderData);
+        });
+    
+        const orders = {
+            waitingOrders,
+            completedOrders,
+            canceledOrders
+        }
+    
+        res.render('order-history', { isLogged: isLogged, isAdmin: isAdmin, orders: orders });
+    } catch (err) {
+        console.log(err);
     }
-    //console.log(userOrders);
-    let waitingOrders = userOrders.filter(x => x.orderStatus === 0);
-    waitingOrders.forEach(x => {
-        x.name = user.userName;
-        x.surName = user.userSurName;
-        x.commTitle = user.userCommercialTitle;
-        x.taxNumber = user.userTaxNumber;
-        x.adress = user.userAdress;
-        x.phone = user.userPhone;
-        x.orderData = JSON.parse(x.orderData);
-    });
-
-    let completedOrders = userOrders.filter(x => x.orderStatus === 1);
-    completedOrders.forEach(x => {
-        x.name = user.userName;
-        x.surName = user.userSurName;
-        x.commTitle = user.userCommercialTitle;
-        x.taxNumber = user.userTaxNumber;
-        x.adress = user.userAdress;
-        x.phone = user.userPhone;
-        x.orderData = JSON.parse(x.orderData);
-    });
-
-    let canceledOrders = userOrders.filter(x => x.orderStatus === 2);
-    canceledOrders.forEach(x => {
-        x.name = user.userName;
-        x.surName = user.userSurName;
-        x.commTitle = user.userCommercialTitle;
-        x.taxNumber = user.userTaxNumber;
-        x.adress = user.userAdress;
-        x.phone = user.userPhone;
-        x.orderData = JSON.parse(x.orderData);
-    });
-
-    const orders = {
-        waitingOrders,
-        completedOrders,
-        canceledOrders
-    }
-
-    res.render('order-history', { isLogged: isLogged, isAdmin: isAdmin, orders: orders });
 });
 
 router.get('/profile', async (req, res) => {
-    const isLogged = req.signedCookies['userId'];
-    if(!isLogged) return res.redirect('/');
-    let isAdmin = await checkIsAdmin(req);
-    const userId = req.signedCookies['userId'];
-    if(!userId) res.redirect('/');
+    try {
+        const isLogged = req.signedCookies['userId'];
+        if(!isLogged) return res.redirect('/');
+        let isAdmin = await checkIsAdmin(req);
+        const userId = req.signedCookies['userId'];
+        if(!userId) res.redirect('/');
 
-    let user = await database.getUserById(userId);
-    if(user === null) {
-        return res.redirect('/');
+        let user = await database.getUserById(userId);
+        if(user === null) {
+            return res.redirect('/');
+        }
+
+        const profileData = {
+            name: user.userName,
+            surName: user.userSurName,
+            commTitle: user.userCommercialTitle,
+            taxNumber: user.userTaxNumber,
+            phone: user.userPhone,
+            mail: user.userMail,
+            adress: user.userAdress,
+        };
+        console.log(profileData);
+
+        res.render('profile', { isLogged: isLogged, isAdmin: isAdmin, profileData: profileData });
+    } catch (err) {
+        console.log(err);
     }
-
-    const profileData = {
-        name: user.userName,
-        surName: user.userSurName,
-        commTitle: user.userCommercialTitle,
-        taxNumber: user.userTaxNumber,
-        phone: user.userPhone,
-        mail: user.userMail,
-        adress: user.userAdress,
-    };
-    console.log(profileData);
-
-    res.render('profile', { isLogged: isLogged, isAdmin: isAdmin, profileData: profileData });
 });
 
 router.post('/api/saveprofiledata', async (req, res) => {
-    const { userProfile, newPassword } = req.body;
-    if(userProfile === undefined || newPassword === undefined) return res.json({ errorMessage: 'Hata oluştu! Daha sonra tekrar deneyin', waitTime: 2500});
+    try {
+        const { userProfile, newPassword } = req.body;
+        if(userProfile === undefined || newPassword === undefined) return res.json({ errorMessage: 'Hata oluştu! Daha sonra tekrar deneyin', waitTime: 2500});
 
-    const userId = req.signedCookies['userId'];
-    if(!userId) res.redirect('/');
+        const userId = req.signedCookies['userId'];
+        if(!userId) res.redirect('/');
 
-    let user = await database.getUserById(userId);
-    if(user === null) {
-        return res.redirect('/');
+        let user = await database.getUserById(userId);
+        if(user === null) {
+            return res.redirect('/');
+        }
+
+        user.userName = userProfile.name;
+        user.userSurName = userProfile.surName;
+        user.userCommercialTitle = userProfile.commTitle;
+        user.userTaxNumber = userProfile.taxNumber;
+        user.userPhone = userProfile.phone;
+        user.userMail = userProfile.mail;
+        user.userAdress = userProfile.adress;
+        if(newPassword !== '') {
+            const saltRounds = 10;
+            const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+            user.userPassword = hashedPassword;
+        }
+        await database.updateUserById(userId, user);
+
+        res.json({ successMessage: 'Kişisel bilgileriniz başarıyla güncellendi!', waitTime: 2500 })
+    } catch (err) {
+        console.log(err);
     }
-
-    user.userName = userProfile.name;
-    user.userSurName = userProfile.surName;
-    user.userCommercialTitle = userProfile.commTitle;
-    user.userTaxNumber = userProfile.taxNumber;
-    user.userPhone = userProfile.phone;
-    user.userMail = userProfile.mail;
-    user.userAdress = userProfile.adress;
-    if(newPassword !== '') {
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-        user.userPassword = hashedPassword;
-    }
-    await database.updateUserById(userId, user);
-
-    res.json({ successMessage: 'Kişisel bilgileriniz başarıyla güncellendi!', waitTime: 2500 })
 });
 
 // Sayfa bulunamadı (En sonda olmalı)
 router.use((req, res, next) => {
-    // Kullanıcıyı ana sayfaya yönlendir
-    res.redirect('/');
+    try {
+        // Kullanıcıyı ana sayfaya yönlendir
+        res.redirect('/');   
+    } catch (err) {
+        console.log(err);
+    }
 });
 
 async function getNewProducts() {
-    let products = await database.getAllProducts();
-    let newProducts = [];
-    products = products.forEach(x => {
-        const isNew = isNewProduct(x);
-        if(isNew === true) newProducts.push(x);
-    });
-    return newProducts;
+    try {
+        let products = await database.getAllProducts();
+        let newProducts = [];
+        products = products.forEach(x => {
+            const isNew = isNewProduct(x);
+            if(isNew === true) newProducts.push(x);
+        });
+        return newProducts;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
 }
 
 function isNewProduct(product) {
-    const createdDate = convertToDate(product.createdDate);
-    const dateNow = new Date();
-    var difference = dateNow - createdDate;
-    var dateDifference = difference / (1000 * 3600 * 24);
-    return dateDifference <= 10 && dateDifference >= 0;
+    try {
+        const createdDate = convertToDate(product.createdDate);
+        const dateNow = new Date();
+        var difference = dateNow - createdDate;
+        var dateDifference = difference / (1000 * 3600 * 24);
+        return dateDifference <= 10 && dateDifference >= 0;   
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
 }
 
 function convertToDate(dateString) {
-    const parts = dateString.split('.');
-    return new Date(parts[2], parts[1] - 1, parts[0]);
+    try {
+        const parts = dateString.split('.');
+        return new Date(parts[2], parts[1] - 1, parts[0]);   
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
 }
 
-
 async function sendMailToAdmins(headText, text) {
-    
-    let users = await database.getAllUsers();
-    users = users.filter(x => x.userAdminLevel >= 5);
-    for(let i = 0; i < users.length; i++) {
-        const admin = users[i];
-        mailAPI.sendEmail(admin.userMail, headText, text);
+    try {
+        let users = await database.getAllUsers();
+        users = users.filter(x => x.userAdminLevel >= 5);
+        for(let i = 0; i < users.length; i++) {
+            const admin = users[i];
+            mailAPI.sendEmail(admin.userMail, headText, text);
+        }
+    } catch (err) {
+        console.log(err);   
     }
 }
 
 function getRandomIntInclusive(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+    try {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
   }
 
 /*

@@ -4,9 +4,9 @@ const config = require('./config.json');
 async function sendEmail(sentUser, subject, text) {
   // Gmail SMTP sunucusu için yapılandırma
   const transporter = nodemailer.createTransport({
-    host: 'smtp-mail.outlook.com',
-    port: 587, // SSL için güvenli port
-    secure: false, // Gmail için güvenli bağlantı 587 portunda TLS kullanır
+    host: 'smtp.yandex.ru',
+    port: 465, // SSL için güvenli port
+    secure: true, // Gmail için güvenli bağlantı 587 portunda TLS kullanır
     auth: {
       user: config.EMAIL_USER,
       pass: config.EMAIL_PASSWORD,
