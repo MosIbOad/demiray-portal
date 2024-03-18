@@ -262,7 +262,7 @@ router.post('/api/registeraction', async (req, res) => {
     
     res.json({successMessage: "Kayıt işlemi başarılı!", waitTime: 1500, success: true, redirectPage: '/'});
     let mailText = mailAPI.userComingForAdminText();
-    //await sendMailToAdmins('Yeni Üye Kayıt İşlemi', mailText);
+    await sendMailToAdmins('Yeni Üye Kayıt İşlemi', mailText);
     } catch (err) {
         console.log(err);
     }
