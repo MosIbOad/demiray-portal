@@ -229,7 +229,7 @@ const app = new Vue({
         this.showingProductAmount--;
       },
       increaseShowingProductAmount() { // arttır
-        if(this.showingProductAmount >= this.showingProduct.productMaxStock) { this.showingProductAmount = this.showingProduct.productMaxStock; return; }
+        if(this.showingProductAmount >= this.showingProduct.productAmount) { this.showingProductAmount = this.showingProduct.productAmount; return; }
         this.showingProductAmount++;
       },
       addProductToBasket() {
@@ -279,6 +279,10 @@ const app = new Vue({
         this.selectedBasketList.forEach(x => {
           deletingBasketList.push(x.id);
         });
+
+        if(deletingBasketList.length <= 0) {
+          return errorMessage('İşlem yapmak için lütfen ürün veya ürünleri seçin.');
+        }
         //alert(JSON.stringify(deletingBasketList));
 
         $.ajax({
@@ -300,7 +304,7 @@ const app = new Vue({
         const paymentType = parseInt(this.paymentType);
         let buyingProducts = this.selectedBasketList;
 
-        if(buyingProducts.length <= 0) return alert('Sepetinizde ürün bulunamadı!');
+        if(buyingProducts.length <= 0) return errorMessage('Sepetinizde ürün bulunamadı!');
         $.ajax({
           url: '/api/confirmbuyproduct',
           type: 'POST',
