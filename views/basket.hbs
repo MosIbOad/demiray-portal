@@ -68,7 +68,10 @@
                   [totalBasketPrice.toLocaleString('de')]₺
                 </li>
               </ul>
+              <div class="button-area d-flex flex-column">
               <button class="btn btn-basket-confirm mt-3" data-bs-toggle="modal" data-bs-target="#basketModal">Sepeti Onayla</button>
+              <button class="btn btn-modal-close w-100 mt-3" data-bs-toggle="modal" data-bs-target="#noteModal">Not Ekle</button>
+              </div>
             </div> 
           </div>
         </aside>
@@ -167,6 +170,52 @@
           </div>
         </div>
       </div>
+      {{!-- Not --}}
+      <!-- Modal -->
+<div class="modal fade" id="noteModal" tabindex="-1" aria-labelledby="noteModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5">Özel Sipariş</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+                  <div class="mb-3">
+                      <label class="form-label">Adı</label>
+                    <input type="text" class="form-control" placeholder="Adı">
+                  </div>
+                  <div class="mb-3">
+                   <label class="form-label">Soyadı</label>
+                    <input type="text" class="form-control" placeholder="Soyadı">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Ticari Ünvanı</label>
+                    <input type="text" class="form-control" placeholder="Ticari Ünvanı">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Vergi Numarası</label>
+                    <input type="number" class="form-control" placeholder="Vergi Numarası">
+                  </div>
+                  <div class="mb-3">
+                     <label class="form-label">Telefon Numarası</label>
+                    <input type="number" class="form-control" placeholder="Telefon Numarası">
+                  </div>
+                  <div class="mb-3">
+                      <label class="form-label">Adresi</label>
+                      <textarea class="form-control" rows="3" placeholder="Adresi"></textarea>
+                  </div>
+                  <div class="mb-3">
+                       <label class="form-label">Adresi</label>
+                      <textarea class="form-control" rows="3" placeholder="Açıklama"></textarea>
+                  </div>
+      </div>
+       <div class="modal-footer">
+              <button type="button" class="btn btn-modal-close" data-bs-dismiss="modal">Vazgeç</button>
+              <button type="button" class="btn btn-modal-confirm">Oluştur</button>
+     </div>
+    </div>
+  </div>
+</div>
   </main>
         {{> footer }}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
