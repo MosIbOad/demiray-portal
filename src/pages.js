@@ -1564,6 +1564,38 @@ router.post('/api/updateproduct', async (req, res) => {
             return;
         }
 
+        let checkCategory = await checkCategoryAndSubCategory(pData.selectedCategoryId, pData.selectedSubCategoryId);
+
+        if(checkCategory === false) {
+            return res.json({ errorMessage: 'Seçilen kategori ile alt kategori uyuşmuyor!', waitTime: 1500 });
+        }
+
+        if(pData.productName === undefined) {
+            return res.json({ errorMessage: 'Ürün adını belirtmelisiniz!', waitTime: 1500 });
+        } else if(pData.selectedCategoryId === undefined) {
+            return res.json({ errorMessage: 'Kategori seçmelisiniz!', waitTime: 1500 });
+        } else if(pData.selectedSubCategoryId === undefined || pData.selectedCategoryId === -1) {
+            return res.json({ errorMessage: 'Alt kategori seçmelisiniz!', waitTime: 1500 });
+        } else if(pData.productDesc === undefined) {
+            return res.json({ errorMessage: 'Ürün açıklaması girmelisiniz!', waitTime: 1500 });
+        } else if(pData.productCode === undefined) {
+            return res.json({ errorMessage: 'Ürün kodu girmelisiniz!', waitTime: 1500 });
+        } else if(pData.productAmount === undefined) {
+            return res.json({ errorMessage: 'Ürün miktarı girmelisiniz!', waitTime: 1500 });
+        } else if(pData.productModel === undefined) {
+            return res.json({ errorMessage: 'Ürün modelini girmelisiniz!', waitTime: 1500 });
+        } else if(pData.productLength === undefined) {
+            return res.json({ errorMessage: 'Ürün uzunluğunu belirtmelisiniz!', waitTime: 1500 });
+        } else if(pData.productWidth === undefined) {
+            return res.json({ errorMessage: 'Ürün genişliğini belirtmelisiniz!', waitTime: 1500 });
+        } else if(pData.productThickness === undefined) {
+            return res.json({ errorMessage: 'Ürün kalınlığını belirtmelisiniz!', waitTime: 1500 });
+        } else if(pData.productMaxStock === undefined) {
+            return res.json({ errorMessage: 'Ürünün en az ne kadar alınacağını belirtmelisiniz!', waitTime: 1500 });
+        } else if(pData.productPrice === undefined) {
+            return res.json({ errorMessage: 'Ürünün fiyatını belirtmelisiniz!', waitTime: 1500 });
+        }
+
         updatingProduct.productName = pData.productName;
         updatingProduct.productCategory = pData.selectedCategoryId;
         updatingProduct.productSubCategory = pData.selectedSubCategoryId;
@@ -1578,7 +1610,7 @@ router.post('/api/updateproduct', async (req, res) => {
         updatingProduct.productPrice = pData.productPrice;
         updatingProduct.productDiscountedPrice = pData.productDiscountedPrice;
         await database.updateProductById(pId, updatingProduct);
-        res.json({ success: true });
+        res.json({ waitTime: 1500, successMessage: 'Ürün başarıyla düzenlendi! Yönlendiriliyorsunuz...', reloadPage: true});
 
     } catch (err) {
         console.log(err);   
@@ -1767,6 +1799,24 @@ router.use((req, res, next) => {
     }
 });
 
+
+async function getNewProducts() {
+    try {
+        let products = await database.getAllProducts();
+        let newProducts = [];
+        for (let x of products) {
+            if (newProducts.length >= 5) break;
+            const isNew = isNewProduct(x);
+            if (isNew) newProducts.push(x);
+        }
+        return newProducts;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+}
+
+/*
 async function getNewProducts() {
     try {
         let products = await database.getAllProducts();
@@ -1781,6 +1831,7 @@ async function getNewProducts() {
         return null;
     }
 }
+*/
 
 function isNewProduct(product) {
     try {
@@ -1828,6 +1879,20 @@ function getRandomIntInclusive(min, max) {
         return null;
     }
   }
+
+async function checkCategoryAndSubCategory(categoryId, subCategoryId) {
+    let categories = await database.getCategories();
+    let subCategories = await database.getSubCategories();
+
+    let category = categories.find(x => x.categoryId === categoryId);
+    if(!category) return false;
+
+    let subCategory = subCategories.find(x => x.subCategoryId === subCategoryId);
+    if(!subCategory) return false;
+
+    if(subCategory.categoryId === category.categoryId) return true;
+    else return false;
+}
 
 /*
 (async () => {

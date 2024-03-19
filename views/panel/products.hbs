@@ -33,6 +33,7 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/panel-assets/img/content/favicons/favicon-96x96.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/panel-assets/img/content/favicons/favicon-16x16.png" />
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v6.0.0-beta3/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
     <!-- <link rel="manifest" href="img/content/favicons/manifest.json" />-->
     <meta name="msapplication-TileColor" content="#ffffff" />
     <!-- <meta name="msapplication-TileImage" content="../../ms-icon-144x144.html" />-->
@@ -40,6 +41,7 @@
     <script src="/assets/vue.min.js"></script>
     <script src="/assets/axios.min.js"></script>
     <script src="/assets/jquery.min.js"></script>
+    
 </head>
 
 <body>
@@ -1042,38 +1044,31 @@
                                     <div class="col-12 form-group form-group--lg">
                                         <label class="form-label">Ana Kategori</label>
                                         <div class="input-group input-group--append">
-                                            <!-- <select class="input js-input-select input--fluid" data-placeholder="" v-model="selectedCategory">
-                                                <option v-for="category in categories" :key="category" :value="category.categoryId" :selected="category.categoryId === selectedCategory ? 'selected' : ''">[category.categoryName]</option>
-                                            </select> -->
-                                            <select class="input js-input-select input--fluid" data-placeholder="" v-model="selectedCategoryId">
+                                            <select class="select-custom" aria-label="Default select example" v-model.number="selectedCategoryId">
+                                                <option v-for="category in categories" :key="category" :value="category.categoryId">[category.categoryName]</option>
+                                            </select>
+                                            {{!-- <select class="input js-input-select input--fluid" data-placeholder="" v-model="selectedCategoryId">
                                                 <option v-for="category in categories" :key="category" :value="category.categoryId">[category.categoryName]</option>
                                             </select>
                                             
                                             <span class="input-group__arrow">
                           <svg class="icon-icon-keyboard-down">
                             <use xlink:href="#icon-keyboard-down"></use>
-                          </svg></span>
+                          </svg></span> --}}
                                         </div>
                                     </div>
                                     <div class="col-12 form-group form-group--lg">
                                         <label class="form-label">Alt Kategori</label>
                                         <div class="input-group input-group--append">
-                                            <select class="input js-input-select input--fluid" data-placeholder="" v-model="selectedSubCategoryId">
+                                            <select class="select-custom" aria-label="Default select example" v-model.number="selectedSubCategoryId">
                                                 <option v-for="subCategory in filteredSubCategories" :key="subCategory" :value="subCategory.subCategoryId" v-show="selectedCategoryId === subCategory.categoryId">[subCategory.subCategoryName]</option>
-                                                <!-- <option value="1" selected="selected">Kultivator Bıçakları
-                                                </option>
-                                                <option value="2">Apple Watch
-                                                </option>
-                                                <option value="3">AirPods
-                                                </option>
-                                                <option value="4">iPhone
-                                                </option>
-                                                <option value="5">IPad
-                                                </option> -->
+                                            </select>
+                                            {{!-- <select class="input js-input-select input--fluid" data-placeholder="" v-model="selectedSubCategoryId">
+                                                <option v-for="subCategory in filteredSubCategories" :key="subCategory" :value="subCategory.subCategoryId" v-show="selectedCategoryId === subCategory.categoryId">[subCategory.subCategoryName]</option>
                                             </select><span class="input-group__arrow">
                           <svg class="icon-icon-keyboard-down">
                             <use xlink:href="#icon-keyboard-down"></use>
-                          </svg></span>
+                          </svg></span> --}}
                                         </div>
                                     </div>
                                     <div class="col-12 form-group form-group--lg">
@@ -1096,7 +1091,7 @@
                                         <div class="input-group input-group--prepend">
                                             <div class="input-group__prepend"><span class="input-group__symbol"><i class="fa-light fa-boxes-stacked"></i></span>
                                             </div>
-                                            <input class="input" type="number" min="1" max="999999999" placeholder="Kutu Adeti" value="" required v-model="productBox">
+                                            <input class="input" type="number" min="1" max="999999999" placeholder="Kutu Adeti" value="" required v-model.number="productBox">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-12 form-group form-group--lg">
@@ -1112,7 +1107,7 @@
                                         <div class="input-group input-group--prepend">
                                             <div class="input-group__prepend"><span class="input-group__symbol"><i class="fa-light fa-arrows-up-down"></i></span>
                                             </div>
-                                            <input class="input" type="number" min="1" max="999999999" placeholder="Uzunluk" value="" required v-model="productLength">
+                                            <input class="input" type="number" min="1" max="999999999" placeholder="Uzunluk" value="" required v-model.number="productLength">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6 form-group form-group--lg">
@@ -1120,7 +1115,7 @@
                                         <div class="input-group input-group--prepend">
                                             <div class="input-group__prepend"><span class="input-group__symbol"><i class="fa-light fa-arrow-right-arrow-left"></i></span>
                                             </div>
-                                            <input class="input" type="number" min="1" max="999999999" placeholder="Genişilik" value="" required v-model="productWidth">
+                                            <input class="input" type="number" min="1" max="999999999" placeholder="Genişilik" value="" required v-model.number="productWidth">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-12 form-group form-group--lg">
@@ -1128,7 +1123,7 @@
                                         <div class="input-group input-group--prepend">
                                             <div class="input-group__prepend"><span class="input-group__symbol"><i class="fa-light fa-grip-lines"></i></span>
                                             </div>
-                                            <input class="input" type="number" min="1" max="999999999" placeholder="Kalınlık" value="" required v-model="productThickness">
+                                            <input class="input" type="number" min="1" max="999999999" placeholder="Kalınlık" value="" required v-model.number="productThickness">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-12 form-group form-group--lg">
@@ -1136,7 +1131,7 @@
                                         <div class="input-group input-group--prepend">
                                             <div class="input-group__prepend"><span class="input-group__symbol"><i class="fa-light fa-layer-group"></i></span>
                                             </div>
-                                            <input class="input" type="number" min="1" max="999" placeholder="Maksimum Stok" value="" required v-model="productMaxStock">
+                                            <input class="input" type="number" min="1" max="999" placeholder="Maksimum Stok" value="" required v-model.number="productMaxStock">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6 form-group form-group--lg">
@@ -1144,15 +1139,15 @@
                                         <div class="input-group input-group--prepend">
                                             <div class="input-group__prepend"><span class="input-group__symbol"><i class="fa-light fa-turkish-lira-sign"></i></span>
                                             </div>
-                                            <input class="input" type="number" min="1" max="999999999" placeholder="Fiyat" value="" required v-model="productPrice">
+                                            <input class="input" type="number" min="1" max="999999999" placeholder="Fiyat" value="" required v-model.number="productPrice">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6 form-group form-group--lg">
                                         <label class="form-label">İndirimli Fiyat</label>
                                         <div class="input-group input-group--prepend">
-                                            <div class="input-group__prepend"><span class="input-group__symbol"><i class="fa-light fa-percent"></i></span>
+                                            <div class="input-group__prepend"><span class="input-group__symbol"><i class="fa-light fa-turkish-lira-sign"></i></span>
                                             </div>
-                                            <input class="input" type="number" min="1" max="999999999" placeholder="İndirimli Fiyat" value="" required v-model="productDiscountedPrice">
+                                            <input class="input" type="number" min="1" max="999999999" placeholder="İndirimli Fiyat" value="" required v-model.number="productDiscountedPrice">
                                         </div>
                                     </div>
                                    <div class="col-12 col-md-12 form-group form-group--lg">
@@ -1160,7 +1155,7 @@
                                         <div class="input-group input-group--prepend">
                                             <div class="input-group__prepend"><span class="input-group__symbol"><i class="fa-light fa-boxes-stacked"></i></span>
                                             </div>
-                                            <input class="input" type="number" min="1" max="999999999" placeholder="Toplam Ürün" value="" required v-model="productAmount">
+                                            <input class="input" type="number" min="1" max="999999999" placeholder="Toplam Ürün" value="" required v-model.number="productAmount">
                                         </div>
                                     </div>
                                     <div class="col-12 col-sm-6 col-lg-6 d-flex flex-column">
@@ -1471,6 +1466,13 @@
                         return this.products.filter(item => item.productName.toLowerCase().includes(this.filterVal.toLowerCase()) || item.productCode.toLowerCase().includes(this.filterVal.toLowerCase()));
                 },
             },
+            watch: {
+                /*
+                selectedCategoryId: function(newVal, oldVal) {
+                    this.selectedSubCategoryId = -1;
+                }
+                */
+            },
             methods: {
                 paginatedPageCount() {
                     return Math.ceil(this.products.length / 10);
@@ -1673,13 +1675,12 @@
                             return errorMessage('Ölçü fotoğrafını seçmelisiniz!');
                         }
 
-                        
-                        //this.showSuccessPage = true;
+                        /*
                         successMessage('Yeni ürün başarıyla eklendi! Yönlendiriliyorsunuz...', 2500);
                         setTimeout(() => {
-                            //this.showSuccessPage = false;
                             window.location.reload();
                         }, 3000);
+                        */
 
                         const creatingData = {
                             productName: this.productName,
@@ -1697,22 +1698,6 @@
                             productPrice: this.productPrice,
                             productDiscountedPrice: this.productDiscountedPrice,
                         }
-
-                    /*
-                    $.ajax({
-                        url: '/api/sendproductcreatedata',
-                        type: 'POST',
-                        contentType: 'application/json',
-                        data: JSON.stringify({ creatingData: creatingData }),
-                        success: function(response) {
-                        if(response.success) {
-                        
-                        }
-                        },
-                        error: function() {
-                        }
-                    });
-                    */
                         this.submitFile(this.selectedImage, 1, creatingData);
                         this.submitFile(this.selectedSizeImage, 2, creatingData);
                     }
@@ -1733,17 +1718,30 @@
                             productDiscountedPrice: this.productDiscountedPrice,
                         }
 
+                        if(editingData.selectedSubCategoryId === -1) {
+                            return errorMessage('Alt kategori seçmelisiniz!');
+                        }
+                        console.log(editingData.selectedCategoryId);
+
                         $.ajax({
                             url: '/api/updateproduct',
                             type: 'POST',
                             contentType: 'application/json',
                             data: JSON.stringify({ pData: editingData, pId: this.lastProductId }),
                             success: function(response) {
-                            if(response.success) {
-                                successMessage('Ürün bilgileri başarıyla güncellendi! Yönlendiriliyorsunuz...');
+                            if(response.successMessage) {
+                                successMessage(response.successMessage, response.waitTime);
+                                if(!response.reloadPage) return;
                                 setTimeout(() => {
                                     window.location.reload();
-                                }, 2000);
+                                }, response.waitTime);
+                            }
+                            if(response.errorMessage) {
+                                errorMessage(response.errorMessage, response.waitTime);
+                                if(!response.reloadPage) return;
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, response.waitTime);
                             }
                             },
                             error: function() {
@@ -1859,6 +1857,7 @@ function errorMessage(text, delay = 1500) {
 }
     </script>
     <script src="/panel-assets/js/gsap/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="/panel-assets/js/gsap/ScrollToPlugin.min.js"></script>
     <script src="/panel-assets/js/gsap/ScrollTrigger.min.js"></script>
     <script src="/panel-assets/js/vendor.min.js"></script>
